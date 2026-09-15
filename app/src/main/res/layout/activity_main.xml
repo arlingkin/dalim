@@ -430,6 +430,19 @@
                 android:gravity="center"
                 android:textSize="11sp"
                 android:textColor="#9AA0A6" />
+
+            <TextView
+                android:id="@+id/copyrightText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="14dp"
+                android:gravity="center"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:text="© 2026 arlingkin · arlingkin.vercel.app"
+                android:textSize="12sp"
+                android:textColor="@color/primary" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -1,9 +1,13 @@
-## Data Limit v0.2.0-pre
+## Data Limit v0.2.1-pre
 
 Unsigned / debug-signed build for testing. **Not** a production release —
 there is no release keystore yet.
 
 Check `SHA256SUMS.txt` to verify the file.
+
+### What's new in v0.2.1-pre
+- **Copyright footer** in the app dashboard and README, clickable to
+  https://arlingkin.vercel.app
 
 ### What's new in v0.2.0-pre
 - **Stronger data gate**: the block now covers the whole screen and
@@ -28,3 +32,7 @@ Check `SHA256SUMS.txt` to verify the file.
 A normal app cannot physically cut the mobile radio without root or a
 system signature. The gate works by blocking the interface until you
 dismiss it; on rooted devices a companion module could disable the radio.
+
+---
+
+© 2026 arlingkin — https://arlingkin.vercel.app
