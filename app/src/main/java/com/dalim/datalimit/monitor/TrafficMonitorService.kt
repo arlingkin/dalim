@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import com.dalim.datalimit.core.UsagePrefs
-import com.dalim.datalimit.core.UsageReport
 
 class TrafficMonitorService : Service() {
 
