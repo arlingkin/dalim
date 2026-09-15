@@ -96,9 +96,19 @@ class UsagePrefs(context: Context) {
             .remove(KEY_CONSUMED)
             .remove(KEY_BASELINE)
             .putLong(KEY_ALLOWANCE, 0L)
+            .putBoolean(KEY_GATEPOPPED, false)
+            .putLong(KEY_LASTPOP, 0L)
             .apply()
         rollingAnchorMillis = System.currentTimeMillis()
     }
+
+    var gatePopped: Boolean
+        get() = sp.getBoolean(KEY_GATEPOPPED, false)
+        set(v) = sp.edit().putBoolean(KEY_GATEPOPPED, v).apply()
+
+    var lastPopMillis: Long
+        get() = sp.getLong(KEY_LASTPOP, 0L)
+        set(v) = sp.edit().putLong(KEY_LASTPOP, v).apply()
 
     companion object {
         private const val KEY_LIMIT = "limit_mb"
@@ -113,5 +123,7 @@ class UsagePrefs(context: Context) {
         private const val KEY_CONSUMED = "consumed"
         private const val KEY_WINDOW = "window"
         private const val KEY_BASELINE = "baseline"
+        private const val KEY_GATEPOPPED = "gate_popped"
+        private const val KEY_LASTPOP = "last_pop"
     }
 }

@@ -11,8 +11,8 @@ android {
         applicationId = "com.dalim.datalimit"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
-        versionName = "0.2.1-pre"
+        versionCode = 4
+        versionName = "0.2.2-pre"
     }
 
     buildTypes {

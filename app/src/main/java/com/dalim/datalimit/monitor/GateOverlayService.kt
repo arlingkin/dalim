@@ -102,8 +102,9 @@ class GateOverlayService : Service() {
         fun ensureRunning(context: Context) {
             try {
                 context.startForegroundService(Intent(context, GateOverlayService::class.java))
-            } catch (_: SecurityException) {
-                // overlay permission missing / FGS restrictions; skip overlay
+            } catch (_: Exception) {
+                // overlay permission missing / FGS restrictions; the activity
+                // gate (DataGateActivity) still takes over
             }
         }
 

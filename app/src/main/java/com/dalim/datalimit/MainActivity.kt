@@ -148,8 +148,23 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<android.view.View>(R.id.btnStart).setOnClickListener {
             ensureNotificationPermission()
+            if (Settings.canDrawOverlays(this).not()) {
+                Snackbar.make(
+                    findViewById(R.id.toolbar),
+                    "Allow 'Display over other apps' so the gate can block any app.",
+                    Snackbar.LENGTH_LONG
+                ).setAction("Allow now") {
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:$packageName")
+                        )
+                    )
+                }.show()
+            } else {
+                Snackbar.make(findViewById(R.id.toolbar), "Monitoring started", Snackbar.LENGTH_SHORT).show()
+            }
             TrafficMonitorService.start(this)
-            Snackbar.make(findViewById(R.id.toolbar), "Monitoring started", Snackbar.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.btnStop).setOnClickListener {
             TrafficMonitorService.stop(this)
@@ -216,9 +231,20 @@ class MainActivity : AppCompatActivity() {
         rxText.text = "▼ " + TrafficReader.formatBytes(report.radiosRxBytes)
         txText.text = "▲ " + TrafficReader.formatBytes(report.radiosTxBytes)
 
-        statusText.text = if (prefs.monitoringEnabled) "Monitoring: ACTIVE" else "Monitoring: off"
+        val overlayOk = Settings.canDrawOverlays(this)
+        statusText.text = when {
+            !prefs.monitoringEnabled -> "Monitoring: off"
+            !overlayOk -> "Monitoring: ACTIVE — grant overlay permission for the gate"
+            else -> "Monitoring: ACTIVE"
+        }
         statusText.setTextColor(
-            resources.getColor(if (prefs.monitoringEnabled) R.color.accent else R.color.danger)
+            resources.getColor(
+                when {
+                    !prefs.monitoringEnabled -> R.color.danger
+                    !overlayOk -> R.color.warn
+                    else -> R.color.accent
+                }
+            )
         )
 
         val last = prefs.lastCheckMillis

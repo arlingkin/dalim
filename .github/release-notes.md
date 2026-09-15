@@ -1,13 +1,26 @@
-## Data Limit v0.2.1-pre
+## Data Limit v0.2.2-pre
 
 Unsigned / debug-signed build for testing. **Not** a production release —
 there is no release keystore yet.
 
 Check `SHA256SUMS.txt` to verify the file.
 
+### What's new in v0.2.2-pre
+- **Harder data-gate halt.** The full-screen block now truly pops over any
+  app, even from the background — fixing cases where the popup did not
+  appear:
+  - The monitor now launches the blocking screen directly (granting the
+    overlay permission is what allows this on modern Android), instead of
+    relying only on the full-screen notification.
+  - Re-pops every 5 minutes while the limit stays exceeded, so dismissing
+    the screen no longer lets the app through forever.
+  - Start button now asks for the overlay permission up front and the
+    dashboard warns when it's missing.
+  - Added `USE_FULL_SCREEN_INTENT` for Android 13+ full-screen alerts.
+
 ### What's new in v0.2.1-pre
-- **Copyright footer** in the app dashboard and README, clickable to
-  https://arlingkin.vercel.app
+- **Copyright footer**: the dashboard footer and README now show
+  "© 2026 arlingkin", clickable to https://arlingkin.vercel.app
 
 ### What's new in v0.2.0-pre
 - **Stronger data gate**: the block now covers the whole screen and

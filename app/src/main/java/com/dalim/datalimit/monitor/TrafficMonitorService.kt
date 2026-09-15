@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import com.dalim.datalimit.core.UsagePrefs
+import com.dalim.datalimit.ui.DataGateActivity
 
 class TrafficMonitorService : Service() {
 
@@ -71,8 +72,11 @@ class TrafficMonitorService : Service() {
         if (!report.exceeded) {
             nm.cancel(NotificationHelper.NOTIF_ALERT)
             GateOverlayService.stop(this)
+            prefs.gatePopped = false
+            prefs.lastPopMillis = 0L
         } else if (prefs.gateEnabled) {
             GateOverlayService.ensureRunning(this)
+            popGateActivity()
             if (prefs.notificationsEnabled) {
                 // Cancel + re-post so the full-screen alert pops again over
                 // whatever app the user opened, even after they dismissed it.
@@ -88,6 +92,29 @@ class TrafficMonitorService : Service() {
         nm.notify(NotificationHelper.NOTIF_MONITOR, NotificationHelper.monitoringNotification(this, text))
     }
 
+    /**
+     * Launches the full-screen DataGateActivity on top of whatever app is open.
+     * Works from the background while the app holds the SYSTEM_ALERT_WINDOW
+     * permission (which exempts us from background-activity-start limits).
+     * Re-pops every POP_REPEAT_MS while the limit stays exceeded, in case the
+     * user dismissed it or the overlay permission is missing.
+     */
+    private fun popGateActivity() {
+        val now = System.currentTimeMillis()
+        val shouldPop = !prefs.gatePopped || (now - prefs.lastPopMillis) >= POP_REPEAT_MS
+        if (!shouldPop) return
+        prefs.gatePopped = true
+        prefs.lastPopMillis = now
+        val intent = Intent(this, DataGateActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            startActivity(intent)
+        } catch (_: Exception) {
+            // Background activity launch restricted without overlay permission;
+            // the overlay service (and fullScreenIntent below) still applies.
+        }
+    }
+
     override fun onDestroy() {
         stalled = false
         handler.removeCallbacks(tick)
@@ -101,6 +128,7 @@ class TrafficMonitorService : Service() {
     companion object {
         private const val BASE_POLL_MS = 60_000L
         private const val FAST_POLL_MS = 10_000L
+        private const val POP_REPEAT_MS = 300_000L
 
         const val ACTION_RESET = "com.dalim.datalimit.action.RESET"
         const val ACTION_STOP = "com.dalim.datalimit.action.STOP"
