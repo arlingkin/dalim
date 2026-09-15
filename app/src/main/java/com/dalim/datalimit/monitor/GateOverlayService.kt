@@ -16,6 +16,7 @@ import com.dalim.datalimit.core.UsageReport
 class GateOverlayService : Service() {
 
     private lateinit var prefs: UsagePrefs
+    private lateinit var matcher: UsageMatcher
     private var overlayView: View? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -23,20 +24,18 @@ class GateOverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
         prefs = UsagePrefs(this)
+        matcher = UsageMatcher(prefs)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val report = if (Build.VERSION.SDK_INT >= 33) {
-            intent?.getParcelableExtra(EXTRA_REPORT, UsageReport::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent?.getParcelableExtra(EXTRA_REPORT)
-        }
+        val report = matcher.compute(System.currentTimeMillis())
+
+        NotificationHelper.createChannels(this)
         startForeground(
             NotificationHelper.NOTIF_GATE,
             NotificationHelper.gateNotification(this, "Monitoring continues in background")
         )
-        if (report != null) showOverlay(report)
+        showOverlay(report)
         return START_NOT_STICKY
     }
 
@@ -53,9 +52,9 @@ class GateOverlayService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply { gravity = Gravity.TOP }
         try {
-            getSystemService(Context.WINDOW_SERVICE).let {
-                (it as WindowManager).addView(added, lp)
-            }
+            @Suppress("UNCHECKED_CAST")
+            val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            wm.addView(added, lp)
             overlayView = added
         } catch (_: Exception) {
             // Missing SYSTEM_ALERT_WINDOW; the activity gate is still launched via notification.
@@ -82,7 +81,9 @@ class GateOverlayService : Service() {
     private fun dismiss() {
         overlayView?.let { v ->
             try {
-                (getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(v)
+                @Suppress("UNCHECKED_CAST")
+                val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                wm.removeView(v)
             } catch (_: Exception) { }
         }
         overlayView = null
@@ -95,15 +96,11 @@ class GateOverlayService : Service() {
     }
 
     companion object {
-        private const val EXTRA_REPORT = "report"
-
-        fun ensureRunning(context: Context, report: UsageReport) {
-            val intent = Intent(context, GateOverlayService::class.java)
-                .putExtra(EXTRA_REPORT, report)
+        fun ensureRunning(context: Context) {
             try {
-                context.startForegroundService(intent)
+                context.startForegroundService(Intent(context, GateOverlayService::class.java))
             } catch (_: SecurityException) {
-                // overlay permission missing / FGS restrictions; skip overlay.
+                // overlay permission missing / FGS restrictions; skip overlay
             }
         }
 

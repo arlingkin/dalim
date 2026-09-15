@@ -73,7 +73,7 @@ class TrafficMonitorService : Service() {
             nm.cancel(NotificationHelper.NOTIF_ALERT)
             GateOverlayService.stop(this)
         } else if (prefs.gateEnabled) {
-            GateOverlayService.ensureRunning(this, report)
+            GateOverlayService.ensureRunning(this)
             if (prefs.notificationsEnabled) {
                 nm.notify(NotificationHelper.NOTIF_ALERT, NotificationHelper.alertNotification(this))
             }
