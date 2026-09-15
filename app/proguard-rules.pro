@@ -1,0 +1,1 @@
+# Data Limit keeps a small APK; nothing sensitive. Default empty rules.

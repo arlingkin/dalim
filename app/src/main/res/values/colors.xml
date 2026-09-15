@@ -1,0 +1,11 @@
+<resources>
+    <color name="ic_launcher_background">#0D47A1</color>
+    <color name="primary">#0D47A1</color>
+    <color name="primary_dark">#0A3577</color>
+    <color name="accent">#00C853</color>
+    <color name="danger">#D32F2F</color>
+    <color name="warn">#F9A825</color>
+    <color name="window_bg">#F5F7FB</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="overlay_bg">#CC000000</color>
+</resources>
