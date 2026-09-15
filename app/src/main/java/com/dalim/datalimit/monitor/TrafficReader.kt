@@ -8,13 +8,13 @@ class TrafficReader {
         val totalBytes: Long get() = rxBytes + txBytes
     }
 
-    val isSupported: Boolean get() = TrafficStats.getTotalRxBytes() != TrafficStats.UNSUPPORTED
+    val isSupported: Boolean get() = TrafficStats.getTotalRxBytes() != TrafficStats.UNSUPPORTED.toLong()
 
     fun read(): Snapshot {
         val rx = TrafficStats.getTotalRxBytes()
         val tx = TrafficStats.getTotalTxBytes()
-        val rxSafe = if (rx == TrafficStats.UNSUPPORTED) 0L else rx
-        val txSafe = if (tx == TrafficStats.UNSUPPORTED) 0L else tx
+        val rxSafe = if (rx == TrafficStats.UNSUPPORTED.toLong()) 0L else rx
+        val txSafe = if (tx == TrafficStats.UNSUPPORTED.toLong()) 0L else tx
         return Snapshot(rxSafe, txSafe)
     }
 
