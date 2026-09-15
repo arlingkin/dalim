@@ -58,4 +58,4 @@ No signing key is required for this pre-release workflow.
 
 ## License
 
-MIT – use freely.
+AGPL-3.0 – see `LICENSE` in the repository root.
