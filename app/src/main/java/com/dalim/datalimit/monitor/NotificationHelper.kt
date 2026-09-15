@@ -18,6 +18,7 @@ object NotificationHelper {
     const val CHANNEL_ALERT = "dalim_alert"
     const val NOTIF_MONITOR = 1001
     const val NOTIF_ALERT = 1002
+    const val NOTIF_GATE = 1003
 
     fun createChannels(context: Context) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -78,9 +79,23 @@ object NotificationHelper {
             .addAction(0, "Open gate", openGate)
             .addAction(0, "App settings", openApp)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            builder.setFullScreenIntent(openGate, true)
-        }
+        builder.setFullScreenIntent(openGate, true)
         return builder.build()
+    }
+
+    fun gateNotification(context: Context, text: String): Notification {
+        val open = PendingIntent.getActivity(
+            context, 3,
+            Intent(context, DataGateActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        return NotificationCompat.Builder(context, CHANNEL_ALERT)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle("Data gate active")
+            .setContentText(text)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(open)
+            .build()
     }
 }

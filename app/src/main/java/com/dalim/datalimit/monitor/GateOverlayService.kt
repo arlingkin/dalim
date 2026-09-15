@@ -33,8 +33,8 @@ class GateOverlayService : Service() {
             intent?.getParcelableExtra(EXTRA_REPORT)
         }
         startForeground(
-            NotificationHelper.NOTIF_MONITOR,
-            NotificationHelper.monitoringNotification(this, "Data gate active")
+            NotificationHelper.NOTIF_GATE,
+            NotificationHelper.gateNotification(this, "Monitoring continues in background")
         )
         if (report != null) showOverlay(report)
         return START_NOT_STICKY
