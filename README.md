@@ -1,5 +1,8 @@
 # Data Limit (dalim)
 
+[![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
+[![Release](https://img.shields.io/badge/release-v0.1.0--pre-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.1.0-pre)
+
 Track your data usage on Android and automatically enforce a budget you
 configure: **daily**, **weekly**, or **monthly**.
 
@@ -8,6 +11,18 @@ configure: **daily**, **weekly**, or **monthly**.
 > explicitly allow more data, effectively stopping continued use.
 
 ---
+
+## Download
+
+Latest build is published as a GitHub **pre-release** (unsigned /
+debug-signed, no release keystore yet). Install on Android 8.0+ (API 26).
+
+| Version | Type | Download |
+|---------|------|----------|
+| `v0.1.0-pre` | Pre-release · unsigned | [datalimit-0.1.0-pre-unsigned.apk](https://github.com/arlingkin/dalim/releases/download/v0.1.0-pre/datalimit-0.1.0-pre-unsigned.apk) |
+
+- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.1.0-pre](https://github.com/arlingkin/dalim/releases/tag/v0.1.0-pre)
+- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.1.0-pre/SHA256SUMS.txt)
 
 ## Features
 
@@ -44,9 +59,7 @@ Or run `gradle wrapper --gradle-version 8.7` first to generate `gradlew`.
 
 Every push to `main` (or manual **Run**) builds an unsigned / debug-signed
 APK via **GitHub Actions** and publishes it as a GitHub pre-release
-(`v0.1.0-pre`).
-
-No signing key is required for this pre-release workflow.
+(`v0.1.0-pre`). No signing key is required for this pre-release workflow.
 
 ## Roadmap
 
