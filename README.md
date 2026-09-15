@@ -1,14 +1,14 @@
 # Data Limit (dalim)
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Release](https://img.shields.io/badge/release-v0.1.0--pre-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.1.0-pre)
+[![Release](https://img.shields.io/badge/release-v0.2.0--pre-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.2.0-pre)
 
 Track your data usage on Android and automatically enforce a budget you
 configure: **daily**, **weekly**, or **monthly**.
 
 > A normal app cannot kill the mobile radio. When the limit is hit the
-> app blocks the screen with a full-screen **data gate** until you
-> explicitly allow more data, effectively stopping continued use.
+> app locks the whole screen with a full-screen **data gate** — over
+> whatever app you're in — until you explicitly allow more data.
 
 ---
 
@@ -19,10 +19,10 @@ debug-signed, no release keystore yet). Install on Android 8.0+ (API 26).
 
 | Version | Type | Download |
 |---------|------|----------|
-| `v0.1.0-pre` | Pre-release · unsigned | [datalimit-0.1.0-pre-unsigned.apk](https://github.com/arlingkin/dalim/releases/download/v0.1.0-pre/datalimit-0.1.0-pre-unsigned.apk) |
+| `v0.2.0-pre` | Pre-release · unsigned | [datalimit-0.2.0-pre-unsigned.apk](https://github.com/arlingkin/dalim/releases/download/v0.2.0-pre/datalimit-0.2.0-pre-unsigned.apk) |
 
-- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.1.0-pre](https://github.com/arlingkin/dalim/releases/tag/v0.1.0-pre)
-- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.1.0-pre/SHA256SUMS.txt)
+- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.2.0-pre](https://github.com/arlingkin/dalim/releases/tag/v0.2.0-pre)
+- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.2.0-pre/SHA256SUMS.txt)
 
 ## Features
 
@@ -31,7 +31,7 @@ debug-signed, no release keystore yet). Install on Android 8.0+ (API 26).
 | Budget types | Daily · Weekly · Monthly |
 | Window styles | Fixed (midnight reset) / Rolling 24 h |
 | Dashboard | Used / Limit / Remaining gauge, RX & TX, last check time |
-| Gate | Blocking overlay + full-screen alert, "+100 MB" escape hatch |
+| Gate | Full-screen blocking overlay over any app + re-popping full-screen alert, "+100 MB" escape hatch |
 | Autostart | Monitoring resumes after reboot |
 | Permissions | One-tap flow for Usage Access, Overlay, Notifications |
 
@@ -59,7 +59,7 @@ Or run `gradle wrapper --gradle-version 8.7` first to generate `gradlew`.
 
 Every push to `main` (or manual **Run**) builds an unsigned / debug-signed
 APK via **GitHub Actions** and publishes it as a GitHub pre-release
-(`v0.1.0-pre`). No signing key is required for this pre-release workflow.
+(`v0.2.0-pre`). No signing key is required for this pre-release workflow.
 
 ## Roadmap
 

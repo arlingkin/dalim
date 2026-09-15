@@ -74,6 +74,9 @@ class TrafficMonitorService : Service() {
         } else if (prefs.gateEnabled) {
             GateOverlayService.ensureRunning(this)
             if (prefs.notificationsEnabled) {
+                // Cancel + re-post so the full-screen alert pops again over
+                // whatever app the user opened, even after they dismissed it.
+                nm.cancel(NotificationHelper.NOTIF_ALERT)
                 nm.notify(NotificationHelper.NOTIF_ALERT, NotificationHelper.alertNotification(this))
             }
         } else if (prefs.notificationsEnabled) {

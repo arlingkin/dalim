@@ -1,81 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:background="@color/danger"
-    android:elevation="24dp"
-    android:padding="16dp">
-    <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:background="@color/overlay_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@color/danger"
+            android:padding="24dp">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="DATA GATE"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
-                android:letterSpacing="0.2" />
+                android:letterSpacing="0.3" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:text="LIMIT REACHED"
                 android:textColor="#FFFFFF"
-                android:textSize="26sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/gateInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="6dp"
                 android:text="…"
                 android:textColor="#E6FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Your data has been gated as requested. Save your bandwidth!"
+                android:layout_marginTop="6dp"
+                android:text="Your data budget is used up. This gate stays until you choose an action below."
                 android:textColor="#E6FFFFFF"
-                android:textSize="12sp" />
-            <LinearLayout
+                android:textSize="12sp"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/card_bg"
+            android:padding="20dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAllow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:orientation="horizontal">
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAllow"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:text="Allow +100 MB"
-                    android:textColor="@color/danger"
-                    android:backgroundTint="#FFFFFF" />
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnReset"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:text="Reset"
-                    android:textColor="@color/danger"
-                    android:backgroundTint="#FFFFFF" />
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDismiss"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Stop"
-                    android:textColor="#FFFFFF"
-                    android:backgroundTint="@color/primary_dark" />
-            </LinearLayout>
+                android:text="Allow +100 MB"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="@color/primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReset"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Reset current window"
+                android:textColor="@color/primary"
+                app:strokeColor="@color/primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDismiss"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Stop monitoring and dismiss"
+                android:textColor="#5F6368" />
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </LinearLayout>
+</FrameLayout>

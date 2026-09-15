@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.IBinder
-import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
@@ -43,14 +42,18 @@ class GateOverlayService : Service() {
         if (overlayView != null) return
         val added = View.inflate(this, R.layout.gate_overlay, null)
         bind(added, report)
+        // Full-screen, on-top-of-everything overlay: it blocks touch interaction
+        // with whatever app the user has open until they pick an action.
         val lp = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
             PixelFormat.TRANSLUCENT
-        ).apply { gravity = Gravity.TOP }
+        )
         try {
             @Suppress("UNCHECKED_CAST")
             val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager

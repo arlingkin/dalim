@@ -1,9 +1,18 @@
-## Data Limit v0.1.0-pre
+## Data Limit v0.2.0-pre
 
 Unsigned / debug-signed build for testing. **Not** a production release —
 there is no release keystore yet.
 
 Check `SHA256SUMS.txt` to verify the file.
+
+### What's new in v0.2.0-pre
+- **Stronger data gate**: the block now covers the whole screen and
+  intercepts touches, halting whatever app is in the foreground until you
+  tap an action (Allow +100 MB / Reset / Stop).
+- **Persistent popup**: the full-screen alert re-pops over any app even
+  after being dismissed, as long as the limit is still exceeded.
+- **New launcher icon** built from `icons/828*.jpg` (center-cropped to the
+  adaptive icon shape).
 
 ### Feature set
 - Configurable data budget with **Daily / Weekly / Monthly** windows
