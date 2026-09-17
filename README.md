@@ -1,7 +1,9 @@
 # Data Limit (dalim)
 
+> 🇮🇩 **Bahasa Indonesia?** Baca → [indonesia.md](indonesia.md)
+
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Release](https://img.shields.io/badge/release-v0.2.2--pre-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.2.2-pre)
+[![Release](https://img.shields.io/badge/release-v0.3.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.3.0)
 
 Track your data usage on Android and automatically enforce a budget you
 configure: **daily**, **weekly**, or **monthly**.
@@ -14,15 +16,18 @@ configure: **daily**, **weekly**, or **monthly**.
 
 ## Download
 
-Latest build is published as a GitHub **pre-release** (unsigned /
-debug-signed, no release keystore yet). Install on Android 8.0+ (API 26).
+Latest build is a **production release**, signed with the release
+keystore. Install on Android 8.0+ (API 26).
 
 | Version | Type | Download |
 |---------|------|----------|
-| `v0.2.2-pre` | Pre-release · unsigned | [datalimit-0.2.2-pre-unsigned.apk](https://github.com/arlingkin/dalim/releases/download/v0.2.2-pre/datalimit-0.2.2-pre-unsigned.apk) |
+| `v0.3.0` | Production · signed | [datalimit-0.3.0-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.3.0/datalimit-0.3.0-signed.apk) |
 
-- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.2.2-pre](https://github.com/arlingkin/dalim/releases/tag/v0.2.2-pre)
-- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.2.2-pre/SHA256SUMS.txt)
+- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.3.0](https://github.com/arlingkin/dalim/releases/tag/v0.3.0)
+- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.3.0/SHA256SUMS.txt)
+
+Earlier testing builds (`v0.2.x-pre`, unsigned / debug-signed) are still
+available on the [releases page](https://github.com/arlingkin/dalim/releases).
 
 ## Features
 
@@ -55,11 +60,26 @@ debug-signed, no release keystore yet). Install on Android 8.0+ (API 26).
 
 Or run `gradle wrapper --gradle-version 8.7` first to generate `gradlew`.
 
-## CI / Pre-release
+To build a **signed release** you need the release keystore and its
+credentials (they are injected as `DALIM_KEYSTORE_*` environment variables —
+never committed):
 
-Every push to `main` (or manual **Run**) builds an unsigned / debug-signed
-APK via **GitHub Actions** and publishes it as a GitHub pre-release
-(`v0.2.2-pre`). No signing key is required for this pre-release workflow.
+```bash
+export DALIM_KEYSTORE_FILE=/path/to/dalim-release.jks
+export DALIM_KEYSTORE_PASSWORD=...
+export DALIM_KEY_ALIAS=dalim
+export DALIM_KEY_PASSWORD=...
+./gradlew :app:assembleRelease
+# output: app/build/outputs/apk/release/app-release.apk
+```
+
+## CI / Release
+
+Every push to `main` (or manual **Run**) builds a **signed** release APK via
+**GitHub Actions**, using the release keystore restored from repository
+secrets (`DALIM_KEYSTORE_RELEASES` plus `DALIM_KEYSTORE_PASSWORD`,
+`DALIM_KEY_ALIAS`, `DALIM_KEY_PASSWORD`), and publishes it as a full GitHub
+release (`v0.3.0` and later) with a `SHA256SUMS.txt` checksum.
 
 ## Roadmap
 
