@@ -1,5 +1,7 @@
 # Data Limit (dalim)
 
+> 🇮🇩 **Bahasa Indonesia?** Baca → [indonesia.md](indonesia.md)
+
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
 [![Release](https://img.shields.io/badge/release-v0.3.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.3.0)
 
