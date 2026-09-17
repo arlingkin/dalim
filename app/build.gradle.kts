@@ -11,8 +11,20 @@ android {
         applicationId = "com.dalim.datalimit"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "0.2.2-pre"
+        versionCode = 5
+        versionName = "0.3.0"
+    }
+
+    signingConfigs {
+        create("release") {
+            val ksPath = System.getenv("DALIM_KEYSTORE_FILE")
+            if (!ksPath.isNullOrBlank()) {
+                storeFile = java.io.File(ksPath)
+                storePassword = System.getenv("DALIM_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("DALIM_KEY_ALIAS")
+                keyPassword = System.getenv("DALIM_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -22,6 +34,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = if (System.getenv("DALIM_KEYSTORE_FILE").isNullOrBlank()) null
+                else signingConfigs.getByName("release")
         }
     }
     compileOptions {

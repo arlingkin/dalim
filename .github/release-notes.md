@@ -1,21 +1,25 @@
-## Data Limit v0.2.2-pre
+## Data Limit v0.3.0
 
-Unsigned / debug-signed build for testing. **Not** a production release —
-there is no release keystore yet.
+First **public production release** — signed with the release keystore.
 
 Check `SHA256SUMS.txt` to verify the file.
 
+### What's new in v0.3.0
+- **Signed production build.** APK is now signed with a release keystore
+  (no more unsigned / debug-signed pre-release).
+- **Icon fixed to match the artwork.** The launcher now uses the teal gate
+  glyph from `icons/828*.jpg` on the adaptive-icon foreground instead of a
+  blank dark tile; legacy round/square launcher icons included.
+- **Halt opens the red gate immediately.** When the data limit is hit, the
+  full-screen red gate re-pops on every fast poll tick — no 5-minute
+  throttle — so it cannot be swiped away without picking an action
+  (Allow +100 MB / Reset / Stop monitoring).
+
 ### What's new in v0.2.2-pre
-- **Harder data-gate halt.** The full-screen block now truly pops over any
-  app, even from the background — fixing cases where the popup did not
-  appear:
+- **Harder data-gate halt.**
   - The monitor now launches the blocking screen directly (granting the
     overlay permission is what allows this on modern Android), instead of
     relying only on the full-screen notification.
-  - Re-pops every 5 minutes while the limit stays exceeded, so dismissing
-    the screen no longer lets the app through forever.
-  - Start button now asks for the overlay permission up front and the
-    dashboard warns when it's missing.
   - Added `USE_FULL_SCREEN_INTENT` for Android 13+ full-screen alerts.
 
 ### What's new in v0.2.1-pre
@@ -28,8 +32,6 @@ Check `SHA256SUMS.txt` to verify the file.
   tap an action (Allow +100 MB / Reset / Stop).
 - **Persistent popup**: the full-screen alert re-pops over any app even
   after being dismissed, as long as the limit is still exceeded.
-- **New launcher icon** built from `icons/828*.jpg` (center-cropped to the
-  adaptive icon shape).
 
 ### Feature set
 - Configurable data budget with **Daily / Weekly / Monthly** windows

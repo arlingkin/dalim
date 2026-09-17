@@ -75,6 +75,10 @@ class TrafficMonitorService : Service() {
             prefs.gatePopped = false
             prefs.lastPopMillis = 0L
         } else if (prefs.gateEnabled) {
+            // Halt: hit the limit, so open the red gate (data-limit screen)
+            // directly. It re-pops on every fast poll tick — with no throttle
+            // — so it comes back even after the user backs out or dismisses
+            // it, until they pick an action (allow more / reset / stop).
             GateOverlayService.ensureRunning(this)
             popGateActivity()
             if (prefs.notificationsEnabled) {
@@ -94,19 +98,15 @@ class TrafficMonitorService : Service() {
 
     /**
      * Launches the full-screen DataGateActivity on top of whatever app is open.
-     * Works from the background while the app holds the SYSTEM_ALERT_WINDOW
-     * permission (which exempts us from background-activity-start limits).
-     * Re-pops every POP_REPEAT_MS while the limit stays exceeded, in case the
-     * user dismissed it or the overlay permission is missing.
+     * Called on every fast poll tick while the limit stays exceeded, so the red
+     * gate always opens/re-opens directly. Works from the background while the
+     * app holds the SYSTEM_ALERT_WINDOW permission (which exempts us from
+     * background-activity-start limits). CLEAR_TOP prevents stacking when the
+     * activity is already shown.
      */
     private fun popGateActivity() {
-        val now = System.currentTimeMillis()
-        val shouldPop = !prefs.gatePopped || (now - prefs.lastPopMillis) >= POP_REPEAT_MS
-        if (!shouldPop) return
-        prefs.gatePopped = true
-        prefs.lastPopMillis = now
         val intent = Intent(this, DataGateActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         try {
             startActivity(intent)
         } catch (_: Exception) {
@@ -128,7 +128,6 @@ class TrafficMonitorService : Service() {
     companion object {
         private const val BASE_POLL_MS = 60_000L
         private const val FAST_POLL_MS = 10_000L
-        private const val POP_REPEAT_MS = 300_000L
 
         const val ACTION_RESET = "com.dalim.datalimit.action.RESET"
         const val ACTION_STOP = "com.dalim.datalimit.action.STOP"

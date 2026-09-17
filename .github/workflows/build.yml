@@ -1,4 +1,4 @@
-name: Build & Pre-Release APK
+name: Build & Release APK
 
 on:
   push:
@@ -9,11 +9,11 @@ permissions:
   contents: write
 
 env:
-  APP_VERSION: 0.2.2-pre
+  APP_VERSION: 0.3.0
 
 jobs:
   build:
-    name: Build unsigned APK
+    name: Build signed release APK
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,16 +30,29 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Build debug APK (debug-signed, no release key)
+      - name: Restore release signing key
+        env:
+          DALIM_KEYSTORE_BASE64: ${{ secrets.DALIM_KEYSTORE_BASE64 }}
         run: |
-          gradle :app:assembleDebug --no-daemon --stacktrace
+          if [ -n "$DALIM_KEYSTORE_BASE64" ]; then
+            echo "$DALIM_KEYSTORE_BASE64" | base64 -d > dalim-release.jks
+          fi
+
+      - name: Build signed release APK
+        env:
+          DALIM_KEYSTORE_FILE: /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/dalim-release.jks
+          DALIM_KEYSTORE_PASSWORD: ${{ secrets.DALIM_KEYSTORE_PASSWORD }}
+          DALIM_KEY_ALIAS: ${{ secrets.DALIM_KEY_ALIAS }}
+          DALIM_KEY_PASSWORD: ${{ secrets.DALIM_KEY_PASSWORD }}
+        run: |
+          gradle :app:assembleRelease --no-daemon --stacktrace
 
       - name: Collect & rename APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/datalimit-${APP_VERSION}-unsigned.apk
+          cp app/build/outputs/apk/release/app-release.apk dist/datalimit-${APP_VERSION}-signed.apk
           cd dist
-          sha256sum datalimit-${APP_VERSION}-unsigned.apk > SHA256SUMS.txt
+          sha256sum datalimit-${APP_VERSION}-signed.apk > SHA256SUMS.txt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -48,7 +61,7 @@ jobs:
           path: dist/*
 
   release:
-    name: Publish GitHub pre-release
+    name: Publish GitHub release
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -61,15 +74,14 @@ jobs:
           name: datalimit-apk
           path: dist
 
-      - name: Create pre-release
+      - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APP_VERSION: ${{ env.APP_VERSION }}
         run: |
           gh release create "v${APP_VERSION}" \
-            "dist/datalimit-${APP_VERSION}-unsigned.apk" \
+            "dist/datalimit-${APP_VERSION}-signed.apk" \
             "dist/SHA256SUMS.txt" \
             --repo "$GITHUB_REPOSITORY" \
-            --prerelease \
-            --title "Data Limit v${APP_VERSION} (pre-release)" \
+            --title "Data Limit v${APP_VERSION}" \
             --notes-file "$GITHUB_WORKSPACE/.github/release-notes.md"
