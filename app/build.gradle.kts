@@ -19,7 +19,7 @@ android {
         create("release") {
             val ksPath = System.getenv("DALIM_KEYSTORE_FILE")
             if (!ksPath.isNullOrBlank()) {
-                storeFile = java.io.File(ksPath)
+                storeFile = file(ksPath)
                 storePassword = System.getenv("DALIM_KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("DALIM_KEY_ALIAS")
                 keyPassword = System.getenv("DALIM_KEY_PASSWORD")
