@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import com.dalim.datalimit.R
+import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.UsageReport
 
@@ -20,10 +21,14 @@ class GateOverlayService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.resolve(newBase))
+    }
+
     override fun onCreate() {
         super.onCreate()
         prefs = UsagePrefs(this)
-        matcher = UsageMatcher(prefs)
+        matcher = UsageMatcher(prefs, LocaleHelper.resolve(applicationContext))
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -32,7 +37,7 @@ class GateOverlayService : Service() {
         NotificationHelper.createChannels(this)
         startForeground(
             NotificationHelper.NOTIF_GATE,
-            NotificationHelper.gateNotification(this, "Monitoring continues in background")
+            NotificationHelper.gateNotification(this, getString(R.string.monitoring_bg))
         )
         showOverlay(report)
         return START_NOT_STICKY
@@ -65,8 +70,11 @@ class GateOverlayService : Service() {
     }
 
     private fun bind(view: View, report: UsageReport) {
-        view.findViewById<TextView>(R.id.gateInfo).text =
-            "${TrafficReader.formatBytes(report.consumedBytes)} / ${TrafficReader.formatBytes(report.effectiveLimitBytes)}"
+        view.findViewById<TextView>(R.id.gateInfo).text = getString(
+            R.string.gate_stats_fmt,
+            TrafficReader.formatBytes(report.consumedBytes),
+            TrafficReader.formatBytes(report.effectiveLimitBytes)
+        )
         view.findViewById<View>(R.id.btnAllow).setOnClickListener {
             prefs.extraAllowanceMb += 100L
             dismiss()

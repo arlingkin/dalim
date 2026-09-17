@@ -16,6 +16,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.monitor.GateOverlayService
 import com.dalim.datalimit.monitor.TrafficMonitorService
@@ -55,12 +56,16 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.resolve(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         prefs = UsagePrefs(this)
-        matcher = UsageMatcher(prefs)
+        matcher = UsageMatcher(prefs, LocaleHelper.resolve(applicationContext))
 
         usedText = findViewById(R.id.usedText)
         percentText = findViewById(R.id.percentText)
@@ -113,6 +118,9 @@ class MainActivity : AppCompatActivity() {
         )
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchGate).isChecked = s.gateEnabled
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchNotify).isChecked = s.notificationsEnabled
+        findViewById<MaterialButtonToggleGroup>(R.id.languageGroup).check(
+            if (prefs.language == LocaleHelper.LANG_ID) R.id.btnIndonesia else R.id.btnEnglish
+        )
     }
 
     private fun wireListeners() {
@@ -143,6 +151,27 @@ class MainActivity : AppCompatActivity() {
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchNotify)
             .setOnCheckedChangeListener { _, checked -> prefs.notificationsEnabled = checked }
 
+        findViewById<MaterialButtonToggleGroup>(R.id.languageGroup)
+            .addOnButtonCheckedListener { group, checkedId, isChecked ->
+                if (isChecked) {
+                    val lang = if (checkedId == R.id.btnIndonesia) LocaleHelper.LANG_ID else LocaleHelper.LANG_EN
+                    if (lang != prefs.language) {
+                        prefs.language = lang
+                        Snackbar.make(
+                            findViewById(R.id.toolbar),
+                            getString(R.string.snack_language_changed),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                        if (prefs.monitoringEnabled) {
+                            TrafficMonitorService.stop(this)
+                            TrafficMonitorService.start(this)
+                        }
+                        handler.removeCallbacks(refreshTick)
+                        recreate()
+                    }
+                }
+            }
+
         findViewById<android.view.View>(R.id.btnPermissions).setOnClickListener {
             requestPermissionsIfNeeded()
         }
@@ -151,9 +180,9 @@ class MainActivity : AppCompatActivity() {
             if (Settings.canDrawOverlays(this).not()) {
                 Snackbar.make(
                     findViewById(R.id.toolbar),
-                    "Allow 'Display over other apps' so the gate can block any app.",
+                    getString(R.string.snack_overlay_rationale),
                     Snackbar.LENGTH_LONG
-                ).setAction("Allow now") {
+                ).setAction(getString(R.string.snack_allow_now)) {
                     startActivity(
                         Intent(
                             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -162,20 +191,20 @@ class MainActivity : AppCompatActivity() {
                     )
                 }.show()
             } else {
-                Snackbar.make(findViewById(R.id.toolbar), "Monitoring started", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(findViewById(R.id.toolbar), getString(R.string.snack_started), Snackbar.LENGTH_SHORT).show()
             }
             TrafficMonitorService.start(this)
         }
         findViewById<android.view.View>(R.id.btnStop).setOnClickListener {
             TrafficMonitorService.stop(this)
             GateOverlayService.stop(this)
-            Snackbar.make(findViewById(R.id.toolbar), "Monitoring stopped", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(findViewById(R.id.toolbar), getString(R.string.snack_stopped), Snackbar.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.btnReset).setOnClickListener {
             TrafficMonitorService.reset(this)
             prefs.resetCounter()
             render()
-            Snackbar.make(findViewById(R.id.toolbar), "Window counter reset", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(findViewById(R.id.toolbar), getString(R.string.snack_reset), Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -205,10 +234,10 @@ class MainActivity : AppCompatActivity() {
         val settings = prefs.settings()
 
         usedText.text = TrafficReader.formatBytes(report.consumedBytes)
-        limitText.text = "limit: " + TrafficReader.formatBytes(report.effectiveLimitBytes)
+        limitText.text = getString(R.string.limit_label, TrafficReader.formatBytes(report.effectiveLimitBytes))
         remainingText.text =
-            if (report.limitActive) "left: " + TrafficReader.formatBytes(report.remainingBytes)
-            else "no limit set"
+            if (report.limitActive) getString(R.string.left_label, TrafficReader.formatBytes(report.remainingBytes))
+            else getString(R.string.no_limit_set)
 
         if (report.limitActive) {
             percentText.text = "${report.usedPercent.coerceAtMost(999)}%"
@@ -221,21 +250,21 @@ class MainActivity : AppCompatActivity() {
                 else resources.getColor(R.color.accent)
             )
         } else {
-            percentText.text = "no limit"
+            percentText.text = getString(R.string.no_limit)
             gateProgress.progress = 0
             gateProgress.progressTintList =
                 android.content.res.ColorStateList.valueOf(resources.getColor(R.color.accent))
         }
 
-        windowText.text = "Window: " + report.windowLabel
+        windowText.text = getString(R.string.window_label, report.windowLabel)
         rxText.text = "▼ " + TrafficReader.formatBytes(report.radiosRxBytes)
         txText.text = "▲ " + TrafficReader.formatBytes(report.radiosTxBytes)
 
         val overlayOk = Settings.canDrawOverlays(this)
         statusText.text = when {
-            !prefs.monitoringEnabled -> "Monitoring: off"
-            !overlayOk -> "Monitoring: ACTIVE — grant overlay permission for the gate"
-            else -> "Monitoring: ACTIVE"
+            !prefs.monitoringEnabled -> getString(R.string.status_off)
+            !overlayOk -> getString(R.string.status_active_no_overlay)
+            else -> getString(R.string.status_active)
         }
         statusText.setTextColor(
             resources.getColor(
@@ -248,8 +277,10 @@ class MainActivity : AppCompatActivity() {
         )
 
         val last = prefs.lastCheckMillis
-        lastCheckText.text = if (last > 0L) "last check " + android.text.format.DateFormat
-            .getTimeFormat(this).format(java.util.Date(last)) else "last check —"
+        lastCheckText.text = if (last > 0L) getString(
+            R.string.last_check_fmt,
+            android.text.format.DateFormat.getTimeFormat(this).format(java.util.Date(last))
+        ) else getString(R.string.last_check_empty)
     }
 
     private fun ensureNotificationPermission() {
@@ -266,9 +297,9 @@ class MainActivity : AppCompatActivity() {
         if (!isUsageAccessGranted()) {
             Snackbar.make(
                 root,
-                "Granting 'Usage Access' lets the app read exact data amounts.",
+                getString(R.string.snack_usage_rationale),
                 Snackbar.LENGTH_LONG
-            ).setAction("Grant") {
+            ).setAction(getString(R.string.snack_grant)) {
                 startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
             }.show()
         }
@@ -276,9 +307,9 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= 23 && Settings.canDrawOverlays(this).not()) {
             Snackbar.make(
                 root,
-                "'Display over other apps' enables the full-screen data gate.",
+                getString(R.string.snack_overlay_grant),
                 Snackbar.LENGTH_LONG
-            ).setAction("Grant") {
+            ).setAction(getString(R.string.snack_grant)) {
                 startActivity(
                     Intent(
                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,

@@ -1,8 +1,16 @@
-## Data Limit v0.3.0
+## Data Limit v0.3.1
 
-First **public production release** — signed with the release keystore.
+Signed production release — **Bahasa Indonesia is now built into the app**.
 
 Check `SHA256SUMS.txt` to verify the file.
+
+### What's new in v0.3.1
+- **In-app language setting (English / Bahasa Indonesia).** A new
+  **LANGUAGE** card in the dashboard lets you switch the whole interface —
+  dashboard, data gate, overlay, and notifications — between **English** and
+  **Bahasa Indonesia**, no system-locale change required.
+- Settings remember your choice and it survives restarts/reboots.
+- Updated `indonesia.md` (Indonesian README) to match.
 
 ### What's new in v0.3.0
 - **Signed production build.** APK is now signed with a release keystore
@@ -15,24 +23,6 @@ Check `SHA256SUMS.txt` to verify the file.
   throttle — so it cannot be swiped away without picking an action
   (Allow +100 MB / Reset / Stop monitoring).
 
-### What's new in v0.2.2-pre
-- **Harder data-gate halt.**
-  - The monitor now launches the blocking screen directly (granting the
-    overlay permission is what allows this on modern Android), instead of
-    relying only on the full-screen notification.
-  - Added `USE_FULL_SCREEN_INTENT` for Android 13+ full-screen alerts.
-
-### What's new in v0.2.1-pre
-- **Copyright footer**: the dashboard footer and README now show
-  "© 2026 arlingkin", clickable to https://arlingkin.vercel.app
-
-### What's new in v0.2.0-pre
-- **Stronger data gate**: the block now covers the whole screen and
-  intercepts touches, halting whatever app is in the foreground until you
-  tap an action (Allow +100 MB / Reset / Stop).
-- **Persistent popup**: the full-screen alert re-pops over any app even
-  after being dismissed, as long as the limit is still exceeded.
-
 ### Feature set
 - Configurable data budget with **Daily / Weekly / Monthly** windows
   and **rolling 24h** or **midnight-reset** styles
@@ -42,6 +32,7 @@ Check `SHA256SUMS.txt` to verify the file.
   the budget is exhausted, plus "allow +100 MB" escape hatch
 - Boot-autostart of monitoring
 - Two-tap permission flow (usage access, overlays, notifications)
+- Bilingual interface: Language switch (English / Bahasa Indonesia)
 
 ### Known limits (Android)
 A normal app cannot physically cut the mobile radio without root or a

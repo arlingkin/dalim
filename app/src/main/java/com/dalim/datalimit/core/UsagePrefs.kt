@@ -28,6 +28,10 @@ class UsagePrefs(context: Context) {
         get() = sp.getBoolean(KEY_NOTIFY, true)
         set(v) = sp.edit().putBoolean(KEY_NOTIFY, v).apply()
 
+    var language: String
+        get() = sp.getString(KEY_LANG, LocaleHelper.LANG_EN) ?: LocaleHelper.LANG_EN
+        set(v) = sp.edit().putString(KEY_LANG, v).apply()
+
     var extraAllowanceMb: Long
         get() = sp.getLong(KEY_ALLOWANCE, 0L)
         set(v) = sp.edit().putLong(KEY_ALLOWANCE, v).apply()
@@ -116,6 +120,7 @@ class UsagePrefs(context: Context) {
         private const val KEY_STYLE = "window_style"
         private const val KEY_GATE = "gate_enabled"
         private const val KEY_NOTIFY = "notify_enabled"
+        private const val KEY_LANG = "language"
         private const val KEY_ALLOWANCE = "extra_allowance_mb"
         private const val KEY_MONITOR = "monitoring_enabled"
         private const val KEY_ANCHOR = "rolling_anchor"

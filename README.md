@@ -3,10 +3,12 @@
 > 🇮🇩 **Bahasa Indonesia?** Baca → [indonesia.md](indonesia.md)
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Release](https://img.shields.io/badge/release-v0.3.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.3.0)
+[![Release](https://img.shields.io/badge/release-v0.3.1-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.3.1)
 
 Track your data usage on Android and automatically enforce a budget you
-configure: **daily**, **weekly**, or **monthly**.
+configure: **daily**, **weekly**, or **monthly**. The interface is
+**bilingual** — switch between **English** and **Bahasa Indonesia** in the
+app's LANGUAGE setting.
 
 > A normal app cannot kill the mobile radio. When the limit is hit the
 > app locks the whole screen with a full-screen **data gate** — over
@@ -21,10 +23,10 @@ keystore. Install on Android 8.0+ (API 26).
 
 | Version | Type | Download |
 |---------|------|----------|
-| `v0.3.0` | Production · signed | [datalimit-0.3.0-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.3.0/datalimit-0.3.0-signed.apk) |
+| `v0.3.1` | Production · signed | [datalimit-0.3.1-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.3.1/datalimit-0.3.1-signed.apk) |
 
-- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.3.0](https://github.com/arlingkin/dalim/releases/tag/v0.3.0)
-- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.3.0/SHA256SUMS.txt)
+- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.3.1](https://github.com/arlingkin/dalim/releases/tag/v0.3.1)
+- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.3.1/SHA256SUMS.txt)
 
 Earlier testing builds (`v0.2.x-pre`, unsigned / debug-signed) are still
 available on the [releases page](https://github.com/arlingkin/dalim/releases).
@@ -39,6 +41,7 @@ available on the [releases page](https://github.com/arlingkin/dalim/releases).
 | Gate | Full-screen blocking overlay over any app + re-popping full-screen alert, "+100 MB" escape hatch |
 | Autostart | Monitoring resumes after reboot |
 | Permissions | One-tap flow for Usage Access, Overlay, Notifications |
+| Language | English · Bahasa Indonesia (in-app switch) |
 
 ## Permissions explained
 
@@ -79,7 +82,7 @@ Every push to `main` (or manual **Run**) builds a **signed** release APK via
 **GitHub Actions**, using the release keystore restored from repository
 secrets (`DALIM_KEYSTORE_RELEASES` plus `DALIM_KEYSTORE_PASSWORD`,
 `DALIM_KEY_ALIAS`, `DALIM_KEY_PASSWORD`), and publishes it as a full GitHub
-release (`v0.3.0` and later) with a `SHA256SUMS.txt` checksum.
+release (`v0.3.1` and later) with a `SHA256SUMS.txt` checksum.
 
 ## Roadmap
 

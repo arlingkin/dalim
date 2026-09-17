@@ -24,7 +24,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DATA GATE"
+                android:text="@string/gate_title"
                 android:textColor="#FFFFFF"
                 android:textSize="13sp"
                 android:textStyle="bold"
@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="LIMIT REACHED"
+                android:text="@string/limit_reached"
                 android:textColor="#FFFFFF"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Your data budget is used up. This gate stays until you choose an action below."
+                android:text="@string/gate_overlay_body"
                 android:textColor="#E6FFFFFF"
                 android:textSize="12sp"
                 android:textAlignment="center" />
@@ -69,7 +69,7 @@
                 android:id="@+id/btnAllow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Allow +100 MB"
+                android:text="@string/allow_100mb"
                 android:textColor="#FFFFFF"
                 android:backgroundTint="@color/primary" />
 
@@ -79,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Reset current window"
+                android:text="@string/reset_window"
                 android:textColor="@color/primary"
                 app:strokeColor="@color/primary" />
 
@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Stop monitoring and dismiss"
+                android:text="@string/stop_and_dismiss"
                 android:textColor="#5F6368" />
         </LinearLayout>
     </LinearLayout>

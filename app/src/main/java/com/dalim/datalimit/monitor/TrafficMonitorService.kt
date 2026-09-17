@@ -7,6 +7,8 @@ import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import com.dalim.datalimit.R
+import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.ui.DataGateActivity
 
@@ -30,10 +32,14 @@ class TrafficMonitorService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.resolve(newBase))
+    }
+
     override fun onCreate() {
         super.onCreate()
         prefs = UsagePrefs(this)
-        matcher = UsageMatcher(prefs)
+        matcher = UsageMatcher(prefs, LocaleHelper.resolve(applicationContext))
         NotificationHelper.createChannels(this)
     }
 
@@ -52,7 +58,7 @@ class TrafficMonitorService : Service() {
 
         startForeground(
             NotificationHelper.NOTIF_MONITOR,
-            NotificationHelper.monitoringNotification(this, "Counting data…")
+            NotificationHelper.monitoringNotification(this, getString(R.string.counting_data))
         )
         prefs.monitoringEnabled = true
         if (!stalled) {
@@ -91,8 +97,11 @@ class TrafficMonitorService : Service() {
             nm.notify(NotificationHelper.NOTIF_ALERT, NotificationHelper.alertNotification(this))
         }
 
-        val text = TrafficReader.formatBytes(report.consumedBytes) +
-            " used · " + report.usedPercent + "% of limit"
+        val text = getString(
+            R.string.monitor_status_fmt,
+            TrafficReader.formatBytes(report.consumedBytes),
+            report.usedPercent.coerceAtMost(999)
+        )
         nm.notify(NotificationHelper.NOTIF_MONITOR, NotificationHelper.monitoringNotification(this, text))
     }
 

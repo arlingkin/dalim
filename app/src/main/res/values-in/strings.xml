@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">Data Limit</string>
+    <string name="app_subtitle">Lacak. Batasi. Gerbang.</string>
+
+    <string name="data_used">DATA TERPAKAI</string>
+    <string name="zero_bytes">0 B</string>
+    <string name="placeholder_left">— sisa</string>
+    <string name="placeholder_limit">batas: —</string>
+    <string name="placeholder_window">Periode: —</string>
+    <string name="limit_label">batas: %1$s</string>
+    <string name="left_label">sisa: %1$s</string>
+    <string name="no_limit_set">batas belum diatur</string>
+    <string name="no_limit">tanpa batas</string>
+    <string name="window_label">Periode: %1$s</string>
+
+    <string name="limit_settings">PENGATURAN BATAS</string>
+    <string name="period_type">Jenis periode</string>
+    <string name="period_daily">Harian</string>
+    <string name="period_weekly">Mingguan</string>
+    <string name="period_monthly">Bulanan</string>
+    <string name="window_style_label">Gaya periode (harian)</string>
+    <string name="window_fixed">Reset tengah malam</string>
+    <string name="window_rolling">Bergulir 24 jam</string>
+    <string name="daily_limit_label">Batas data harian</string>
+    <string name="unlimited_helper">0 = tanpa batas</string>
+    <string name="mb_unit">MB</string>
+    <string name="default_limit">200</string>
+
+    <string name="behavior">PERILAKU</string>
+    <string name="auto_gate">Gerbang data otomatis</string>
+    <string name="limit_warnings">Peringatan batas</string>
+    <string name="auto_gate_hint">Gerbang otomatis memblokir layar beranda saat batas tercapai sehingga Anda dipaksa berhenti. Gerbang tidak dapat mematikan radio secara fisik tanpa akses root/sistem.</string>
+
+    <string name="language">BAHASA</string>
+    <string name="language_hint">Pilih bahasa antarmuka aplikasi</string>
+    <string name="lang_english">English</string>
+    <string name="lang_indonesia">Bahasa Indonesia</string>
+
+    <string name="grant_permissions">Beri izin yang diperlukan</string>
+    <string name="start_monitoring">Mulai pemantauan</string>
+    <string name="stop_monitoring">Hentikan pemantauan</string>
+    <string name="reset_window_counter">Atur ulang penghitung periode</string>
+
+    <string name="status_off">Pemantauan: mati</string>
+    <string name="status_active_no_overlay">Pemantauan: AKTIF — beri izin overlay untuk gerbang</string>
+    <string name="status_active">Pemantauan: AKTIF</string>
+    <string name="last_check_fmt">cek terakhir %1$s</string>
+    <string name="last_check_empty">cek terakhir —</string>
+
+    <string name="copyright">© 2026 arlingkin · arlingkin.vercel.app</string>
+
+    <string name="snack_overlay_rationale">Izinkan \'Tampil di atas aplikasi lain\' agar gerbang dapat memblokir aplikasi apa pun.</string>
+    <string name="snack_allow_now">Izinkan sekarang</string>
+    <string name="snack_started">Pemantauan dimulai</string>
+    <string name="snack_stopped">Pemantauan dihentikan</string>
+    <string name="snack_reset">Penghitung periode diatur ulang</string>
+    <string name="snack_usage_rationale">Memberi \'Akses Penggunaan\' memungkinkan aplikasi membaca jumlah data secara akurat.</string>
+    <string name="snack_grant">Beri</string>
+    <string name="snack_overlay_grant">\'Tampil di atas aplikasi lain\' mengaktifkan gerbang data layar penuh.</string>
+    <string name="snack_language_changed">Bahasa diubah</string>
+
+    <string name="gate_title">GERBANG DATA</string>
+    <string name="limit_reached">BATAS TERCAPAI</string>
+    <string name="gate_body">Data Anda telah di-gerbang sesuai permintaan. Tutup ini untuk tetap memakai data.</string>
+    <string name="gate_overlay_body">Anggaran data Anda habis. Gerbang ini tetap ada sampai Anda memilih tindakan di bawah.</string>
+    <string name="allow_100mb">Izinkan +100 MB</string>
+    <string name="reset_window">Reset periode</string>
+    <string name="dismiss_gate">Saya paham — tutup</string>
+    <string name="stop_and_dismiss">Hentikan pemantauan dan tutup</string>
+    <string name="gate_info_fmt">%1$s terpakai · batas %2$s</string>
+    <string name="gate_stats_fmt">%1$s / %2$s</string>
+
+    <string name="counting_data">Menghitung data…</string>
+    <string name="monitoring_bg">Pemantauan berlanjut di latar belakang</string>
+    <string name="monitor_status_fmt">%1$s terpakai · %2$d%% dari batas</string>
+
+    <string name="channel_monitor_name">Status pemantauan</string>
+    <string name="channel_monitor_desc">Status pemakaian data langsung</string>
+    <string name="channel_alert_name">Peringatan batas data</string>
+    <string name="channel_alert_desc">Dipicu saat batas data yang dikonfigurasi tercapai</string>
+    <string name="notif_watching">Data Limit sedang mengawasi</string>
+    <string name="notif_limit_reached">Batas data tercapai</string>
+    <string name="notif_limit_body">Anggaran data yang Anda atur sudah terpakai habis.</string>
+    <string name="notif_gate_active">Gerbang data aktif</string>
+    <string name="action_open_gate">Buka gerbang</string>
+    <string name="action_app_settings">Pengaturan aplikasi</string>
+
+    <string name="window_daily_fixed">Harian · reset tengah malam</string>
+    <string name="window_rolling24">Periode bergulir 24 jam</string>
+    <string name="window_weekly">Mingguan · reset %1$s</string>
+    <string name="window_monthly">Bulanan · reset pada %1$s</string>
+</resources>

@@ -1,7 +1,7 @@
 # 🌟 Data Limit (dalim) — Bahasa Indonesia 🇮🇩
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Rilis](https://img.shields.io/badge/rilis-v0.3.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.3.0)
+[![Rilis](https://img.shields.io/badge/rilis-v0.3.1-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.3.1)
 
 > 🔎 Butuh versi **English**? Lihat → [README.md](README.md)
 
@@ -18,6 +18,10 @@ pemakaian** otomatis sesuai yang Anda atur: **harian**, **mingguan**, atau
 > data** (data gate) — di atas aplikasi apa pun yang sedang Anda buka 🚧 —
 > sampai Anda secara eksplisit mengizinkan pemakaian data tambahan.
 
+💬 Aplikasi kini **bilingual** — bisa ganti bahasa antarmuka antara
+**English** dan **Bahasa Indonesia** lewat pengaturan **LANGUAGE** di dalam
+aplikasi, tanpa harus mengubah bahasa sistem.
+
 ---
 
 ## 📥 Download
@@ -27,10 +31,10 @@ rilis** 🔐. Dapat dipasang di **Android 8.0+** (API 26).
 
 | Versi | Tipe | Download |
 |-------|------|----------|
-| `v0.3.0` | Produksi · Ditandatangani | [datalimit-0.3.0-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.3.0/datalimit-0.3.0-signed.apk) |
+| `v0.3.1` | Produksi · Ditandatangani | [datalimit-0.3.1-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.3.1/datalimit-0.3.1-signed.apk) |
 
-- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.3.0](https://github.com/arlingkin/dalim/releases/tag/v0.3.0)
-- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.3.0/SHA256SUMS.txt)
+- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.3.1](https://github.com/arlingkin/dalim/releases/tag/v0.3.1)
+- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.3.1/SHA256SUMS.txt)
 
 Versi uji sebelumnya (`v0.2.x-pre`, tanpa tanda tangan / debug-signed) masih
 tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
@@ -47,6 +51,7 @@ tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
 | Gerbang data | Overlay pemblokiran layar penuh di atas aplikasi apa pun + peringatan layar penuh yang muncul lagi, pintu darurat "+100 MB" |
 | Autostart | Pemantauan dilanjutkan otomatis setelah perangkat reboot |
 | Izin | Alur sekali sentuh untuk Akses Penggunaan, Overlay, Notifikasi |
+| Bahasa | English · Bahasa Indonesia (ganti lewat aplikasi) |
 
 ---
 

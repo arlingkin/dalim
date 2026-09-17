@@ -1,10 +1,11 @@
 package com.dalim.datalimit.monitor
 
+import android.content.Context
 import com.dalim.datalimit.core.CountingState
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.UsageReport
 
-class UsageMatcher(private val prefs: UsagePrefs) {
+class UsageMatcher(private val prefs: UsagePrefs, private val appContext: Context) {
 
     private val reader = TrafficReader()
 
@@ -54,7 +55,7 @@ class UsageMatcher(private val prefs: UsagePrefs) {
             usedPercent = usedPercent,
             radiosRxBytes = snapshot.rxBytes,
             radiosTxBytes = snapshot.txBytes,
-            windowLabel = WindowResolver.windowLabel(settings.period, settings.windowStyle),
+            windowLabel = WindowResolver.windowLabel(appContext, settings.period, settings.windowStyle),
             exceeded = exceeded,
             limitActive = limitActive,
             remainingBytes = (effectiveLimit - consumed).coerceAtLeast(0L)

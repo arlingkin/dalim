@@ -1,12 +1,14 @@
 package com.dalim.datalimit.ui
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.TextView
 import com.dalim.datalimit.R
+import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.monitor.TrafficMonitorService
 import com.dalim.datalimit.monitor.TrafficReader
@@ -24,11 +26,15 @@ class DataGateActivity : Activity() {
         }
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.resolve(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gate)
         prefs = UsagePrefs(this)
-        matcher = UsageMatcher(prefs)
+        matcher = UsageMatcher(prefs, LocaleHelper.resolve(applicationContext))
 
         findViewById<View>(R.id.btnAllow).setOnClickListener {
             prefs.extraAllowanceMb += 100L
@@ -61,7 +67,10 @@ class DataGateActivity : Activity() {
 
     private fun render() {
         val report = matcher.compute(System.currentTimeMillis())
-        findViewById<TextView>(R.id.gateInfo).text =
-            "${TrafficReader.formatBytes(report.consumedBytes)} used · limit ${TrafficReader.formatBytes(report.effectiveLimitBytes)}"
+        findViewById<TextView>(R.id.gateInfo).text = getString(
+            R.string.gate_info_fmt,
+            TrafficReader.formatBytes(report.consumedBytes),
+            TrafficReader.formatBytes(report.effectiveLimitBytes)
+        )
     }
 }

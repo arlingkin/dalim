@@ -1,3 +1,92 @@
 <resources>
     <string name="app_name">Data Limit</string>
+    <string name="app_subtitle">Track. Limit. Gate.</string>
+
+    <string name="data_used">DATA USED</string>
+    <string name="zero_bytes">0 B</string>
+    <string name="placeholder_left">— left</string>
+    <string name="placeholder_limit">limit: —</string>
+    <string name="placeholder_window">Window: —</string>
+    <string name="limit_label">limit: %1$s</string>
+    <string name="left_label">left: %1$s</string>
+    <string name="no_limit_set">no limit set</string>
+    <string name="no_limit">no limit</string>
+    <string name="window_label">Window: %1$s</string>
+
+    <string name="limit_settings">LIMIT SETTINGS</string>
+    <string name="period_type">Period type</string>
+    <string name="period_daily">Daily</string>
+    <string name="period_weekly">Weekly</string>
+    <string name="period_monthly">Monthly</string>
+    <string name="window_style_label">Window style (daily)</string>
+    <string name="window_fixed">Midnight reset</string>
+    <string name="window_rolling">Rolling 24h</string>
+    <string name="daily_limit_label">Daily data limit</string>
+    <string name="unlimited_helper">0 = unlimited</string>
+    <string name="mb_unit">MB</string>
+    <string name="default_limit">200</string>
+
+    <string name="behavior">BEHAVIOR</string>
+    <string name="auto_gate">Automatic data gate</string>
+    <string name="limit_warnings">Limit warnings</string>
+    <string name="auto_gate_hint">Auto-gate blocks the home screen when the limit is hit so you are forced to stop. It cannot physically switch off the radio without root/system access.</string>
+
+    <string name="language">LANGUAGE</string>
+    <string name="language_hint">Choose the app interface language</string>
+    <string name="lang_english">English</string>
+    <string name="lang_indonesia">Bahasa Indonesia</string>
+
+    <string name="grant_permissions">Grant required permissions</string>
+    <string name="start_monitoring">Start monitoring</string>
+    <string name="stop_monitoring">Stop monitoring</string>
+    <string name="reset_window_counter">Reset current window counter</string>
+
+    <string name="status_off">Monitoring: off</string>
+    <string name="status_active_no_overlay">Monitoring: ACTIVE — grant overlay permission for the gate</string>
+    <string name="status_active">Monitoring: ACTIVE</string>
+    <string name="last_check_fmt">last check %1$s</string>
+    <string name="last_check_empty">last check —</string>
+
+    <string name="copyright">© 2026 arlingkin · arlingkin.vercel.app</string>
+
+    <string name="snack_overlay_rationale">Allow \'Display over other apps\' so the gate can block any app.</string>
+    <string name="snack_allow_now">Allow now</string>
+    <string name="snack_started">Monitoring started</string>
+    <string name="snack_stopped">Monitoring stopped</string>
+    <string name="snack_reset">Window counter reset</string>
+    <string name="snack_usage_rationale">Granting \'Usage Access\' lets the app read exact data amounts.</string>
+    <string name="snack_grant">Grant</string>
+    <string name="snack_overlay_grant">\'Display over other apps\' enables the full-screen data gate.</string>
+    <string name="snack_language_changed">Language changed</string>
+
+    <string name="gate_title">DATA GATE</string>
+    <string name="limit_reached">LIMIT REACHED</string>
+    <string name="gate_body">Your data has been gated as requested. Close this to keep using data.</string>
+    <string name="gate_overlay_body">Your data budget is used up. This gate stays until you choose an action below.</string>
+    <string name="allow_100mb">Allow +100 MB</string>
+    <string name="reset_window">Reset window</string>
+    <string name="dismiss_gate">I understand — dismiss</string>
+    <string name="stop_and_dismiss">Stop monitoring and dismiss</string>
+    <string name="gate_info_fmt">%1$s used · limit %2$s</string>
+    <string name="gate_stats_fmt">%1$s / %2$s</string>
+
+    <string name="counting_data">Counting data…</string>
+    <string name="monitoring_bg">Monitoring continues in background</string>
+    <string name="monitor_status_fmt">%1$s used · %2$d%% of limit</string>
+
+    <string name="channel_monitor_name">Monitoring status</string>
+    <string name="channel_monitor_desc">Live data usage status</string>
+    <string name="channel_alert_name">Data limit alerts</string>
+    <string name="channel_alert_desc">Fired when the configured data limit is reached</string>
+    <string name="notif_watching">Data Limit is watching</string>
+    <string name="notif_limit_reached">Data limit reached</string>
+    <string name="notif_limit_body">Your configured data budget is used up.</string>
+    <string name="notif_gate_active">Data gate active</string>
+    <string name="action_open_gate">Open gate</string>
+    <string name="action_app_settings">App settings</string>
+
+    <string name="window_daily_fixed">Daily · resets at midnight</string>
+    <string name="window_rolling24">Rolling 24h window</string>
+    <string name="window_weekly">Weekly · resets %1$s</string>
+    <string name="window_monthly">Monthly · resets on %1$s</string>
 </resources>

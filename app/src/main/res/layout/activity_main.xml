@@ -13,7 +13,7 @@
         android:background="@color/primary"
         app:title="@string/app_name"
         app:titleTextColor="#FFFFFF"
-        app:subtitle="Track. Limit. Gate."
+        app:subtitle="@string/app_subtitle"
         app:subtitleTextColor="#B3FFFFFF" />
 
     <ScrollView
@@ -45,7 +45,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="DATA USED"
+                        android:text="@string/data_used"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:textColor="#9AA0A6"
@@ -63,7 +63,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="0 B"
+                            android:text="@string/zero_bytes"
                             android:textSize="34sp"
                             android:textStyle="bold"
                             android:textColor="@color/primary" />
@@ -90,7 +90,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="— left"
+                            android:text="@string/placeholder_left"
                             android:textSize="13sp"
                             android:textColor="#5F6368" />
 
@@ -98,7 +98,7 @@
                             android:id="@+id/limitText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="limit: —"
+                            android:text="@string/placeholder_limit"
                             android:textSize="13sp"
                             android:textColor="#5F6368" />
                     </LinearLayout>
@@ -119,7 +119,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Window: —"
+                        android:text="@string/placeholder_window"
                         android:textSize="12sp"
                         android:textColor="#5F6368" />
 
@@ -168,7 +168,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="LIMIT SETTINGS"
+                        android:text="@string/limit_settings"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:textColor="#9AA0A6"
@@ -178,7 +178,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
-                        android:text="Period type"
+                        android:text="@string/period_type"
                         android:textSize="13sp"
                         android:textColor="#5F6368" />
 
@@ -196,7 +196,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Daily"
+                            android:text="@string/period_daily"
                             android:minHeight="44dp" />
 
                         <com.google.android.material.button.MaterialButton
@@ -205,7 +205,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Weekly"
+                            android:text="@string/period_weekly"
                             android:minHeight="44dp" />
 
                         <com.google.android.material.button.MaterialButton
@@ -214,7 +214,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Monthly"
+                            android:text="@string/period_monthly"
                             android:minHeight="44dp" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -222,7 +222,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
-                        android:text="Window style (daily)"
+                        android:text="@string/window_style_label"
                         android:textSize="13sp"
                         android:textColor="#5F6368" />
 
@@ -240,7 +240,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Midnight reset"
+                            android:text="@string/window_fixed"
                             android:minHeight="44dp" />
 
                         <com.google.android.material.button.MaterialButton
@@ -249,7 +249,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Rolling 24h"
+                            android:text="@string/window_rolling"
                             android:minHeight="44dp" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -257,7 +257,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
-                        android:text="Daily data limit"
+                        android:text="@string/daily_limit_label"
                         android:textSize="13sp"
                         android:textColor="#5F6368" />
 
@@ -274,7 +274,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            app:helperText="0 = unlimited">
+                            app:helperText="@string/unlimited_helper">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/limitInput"
@@ -282,7 +282,7 @@
                                 android:layout_height="wrap_content"
                                 android:inputType="number"
                                 android:maxLines="1"
-                                android:text="200" />
+                                android:text="@string/default_limit" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <TextView
@@ -290,7 +290,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:layout_marginEnd="14dp"
-                            android:text="MB"
+                            android:text="@string/mb_unit"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="#5F6368" />
@@ -316,7 +316,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="BEHAVIOR"
+                        android:text="@string/behavior"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:textColor="#9AA0A6"
@@ -331,7 +331,7 @@
                         app:useMaterialThemeColors="false"
                         app:thumbTint="#0D47A1"
                         app:trackTint="#B9C7D6"
-                        android:text="Automatic data gate"
+                        android:text="@string/auto_gate"
                         android:textColor="#202124" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -342,14 +342,75 @@
                         app:useMaterialThemeColors="false"
                         app:thumbTint="#0D47A1"
                         app:trackTint="#B9C7D6"
-                        android:text="Limit warnings"
+                        android:text="@string/limit_warnings"
                         android:textColor="#202124" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Auto-gate blocks the home screen when the limit is hit so you are forced to stop. It cannot physically switch off the radio without root/system access."
+                        android:text="@string/auto_gate_hint"
+                        android:textSize="12sp"
+                        android:textColor="#5F6368" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ===== Language ===== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/language"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#9AA0A6"
+                        android:letterSpacing="0.1" />
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/languageGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        app:singleSelection="true"
+                        app:selectionRequired="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnEnglish"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/lang_english"
+                            android:minHeight="44dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnIndonesia"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/lang_indonesia"
+                            android:minHeight="44dp" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/language_hint"
                         android:textSize="12sp"
                         android:textColor="#5F6368" />
                 </LinearLayout>
@@ -375,7 +436,7 @@
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Grant required permissions"
+                        android:text="@string/grant_permissions"
                         android:textColor="@color/primary"
                         app:icon="@android:drawable/ic_lock_lock" />
 
@@ -384,7 +445,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Start monitoring"
+                        android:text="@string/start_monitoring"
                         android:textColor="#FFFFFF"
                         android:backgroundTint="@color/accent"
                         app:icon="@android:drawable/ic_media_play" />
@@ -395,7 +456,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Stop monitoring"
+                        android:text="@string/stop_monitoring"
                         android:textColor="@color/danger"
                         app:icon="@android:drawable/ic_media_pause" />
 
@@ -405,7 +466,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Reset current window counter"
+                        android:text="@string/reset_window_counter"
                         android:textColor="#5F6368" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -415,7 +476,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Monitoring: off"
+                android:text="@string/status_off"
                 android:gravity="center"
                 android:textSize="13sp"
                 android:textColor="#5F6368" />
@@ -426,7 +487,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="12dp"
-                android:text="—"
+                android:text="@string/last_check_empty"
                 android:gravity="center"
                 android:textSize="11sp"
                 android:textColor="#9AA0A6" />
@@ -440,7 +501,7 @@
                 android:gravity="center"
                 android:autoLink="web"
                 android:linksClickable="true"
-                android:text="© 2026 arlingkin · arlingkin.vercel.app"
+                android:text="@string/copyright"
                 android:textSize="12sp"
                 android:textColor="@color/primary" />
         </LinearLayout>

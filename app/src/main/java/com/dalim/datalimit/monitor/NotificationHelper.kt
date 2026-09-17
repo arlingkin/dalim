@@ -24,18 +24,18 @@ object NotificationHelper {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val monitor = NotificationChannel(
             CHANNEL_MONITOR,
-            "Monitoring status",
+            context.getString(R.string.channel_monitor_name),
             NotificationManager.IMPORTANCE_MIN
-        ).apply { description = "Live data usage status" }
+        ).apply { description = context.getString(R.string.channel_monitor_desc) }
         nm.createNotificationChannel(monitor)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val alert = NotificationChannel(
                 CHANNEL_ALERT,
-                "Data limit alerts",
+                context.getString(R.string.channel_alert_name),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Fired when the configured data limit is reached"
+                description = context.getString(R.string.channel_alert_desc)
                 enableVibration(true)
             }
             nm.createNotificationChannel(alert)
@@ -50,7 +50,7 @@ object NotificationHelper {
         )
         return NotificationCompat.Builder(context, CHANNEL_MONITOR)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Data Limit is watching")
+            .setContentTitle(context.getString(R.string.notif_watching))
             .setContentText(text)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -71,13 +71,13 @@ object NotificationHelper {
         )
         val builder = NotificationCompat.Builder(context, CHANNEL_ALERT)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Data limit reached")
-            .setContentText("Your configured data budget is used up.")
+            .setContentTitle(context.getString(R.string.notif_limit_reached))
+            .setContentText(context.getString(R.string.notif_limit_body))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(false)
             .setContentIntent(openGate)
-            .addAction(0, "Open gate", openGate)
-            .addAction(0, "App settings", openApp)
+            .addAction(0, context.getString(R.string.action_open_gate), openGate)
+            .addAction(0, context.getString(R.string.action_app_settings), openApp)
 
         builder.setFullScreenIntent(openGate, true)
         return builder.build()
@@ -91,7 +91,7 @@ object NotificationHelper {
         )
         return NotificationCompat.Builder(context, CHANNEL_ALERT)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Data gate active")
+            .setContentTitle(context.getString(R.string.notif_gate_active))
             .setContentText(text)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
