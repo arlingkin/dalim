@@ -32,10 +32,10 @@ jobs:
 
       - name: Restore release signing key
         env:
-          DALIM_KEYSTORE_BASE64: ${{ secrets.DALIM_KEYSTORE_BASE64 }}
+          DALIM_KEYSTORE_RELEASES: ${{ secrets.DALIM_KEYSTORE_RELEASES }}
         run: |
-          if [ -n "$DALIM_KEYSTORE_BASE64" ]; then
-            echo "$DALIM_KEYSTORE_BASE64" | base64 -d > dalim-release.jks
+          if [ -n "$DALIM_KEYSTORE_RELEASES" ]; then
+            echo "$DALIM_KEYSTORE_RELEASES" | base64 -d > dalim-release.jks
           fi
 
       - name: Build signed release APK
