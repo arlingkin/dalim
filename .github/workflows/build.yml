@@ -79,9 +79,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APP_VERSION: ${{ env.APP_VERSION }}
         run: |
-          gh release create "v${APP_VERSION}" \
-            "dist/datalimit-${APP_VERSION}-signed.apk" \
-            "dist/SHA256SUMS.txt" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "Data Limit v${APP_VERSION}" \
-            --notes-file "$GITHUB_WORKSPACE/.github/release-notes.md"
+          TAG="v${APP_VERSION}"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            # Release already exists (e.g. created by a manual run): refresh its assets.
+            gh release upload "$TAG" \
+              "dist/datalimit-${APP_VERSION}-signed.apk" \
+              "dist/SHA256SUMS.txt" \
+              --clobber \
+              --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" \
+              "dist/datalimit-${APP_VERSION}-signed.apk" \
+              "dist/SHA256SUMS.txt" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "Data Limit v${APP_VERSION}" \
+              --notes-file "$GITHUB_WORKSPACE/.github/release-notes.md"
+          fi
