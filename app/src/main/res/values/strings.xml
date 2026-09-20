@@ -182,4 +182,5 @@
     <string name="grant">Grant</string>
     <string name="granted">Granted</string>
     <string name="reset_vault">Clear notification vault</string>
+    <string name="firewall_off">Firewall off</string>
 </resources>

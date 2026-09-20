@@ -182,4 +182,5 @@
     <string name="grant">Beri</string>
     <string name="granted">Diberi</string>
     <string name="reset_vault">Bersihkan lembaran notifikasi</string>
+    <string name="firewall_off">Firewall mati</string>
 </resources>
