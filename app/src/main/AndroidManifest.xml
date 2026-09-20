@@ -60,7 +60,7 @@
             </intent-filter>
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="@string/vpn_special_use_subtype" />
+                android:value="Network firewall via VpnService" />
         </service>
 
         <receiver

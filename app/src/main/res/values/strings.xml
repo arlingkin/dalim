@@ -98,5 +98,4 @@
     <string name="notification_vault">Notification Vault</string>
     <string name="vpn_session">DALIM Core firewall</string>
     <string name="vpn_active">Network firewall active</string>
-    <string name="vpn_special_use_subtype">Network firewall routed through VpnService to block selected apps</string>
 </resources>

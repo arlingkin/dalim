@@ -98,5 +98,4 @@
     <string name="notification_vault">Lembaran Notifikasi</string>
     <string name="vpn_session">Firewall DALIM Core</string>
     <string name="vpn_active">Firewall jaringan aktif</string>
-    <string name="vpn_special_use_subtype">Firewall jaringan melalui VpnService untuk memblokir aplikasi terpilih</string>
 </resources>
