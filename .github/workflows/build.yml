@@ -38,14 +38,14 @@ jobs:
             echo "$DALIM_KEYSTORE_RELEASES" | base64 -d > dalim-release.jks
           fi
 
-      - name: Build signed release APK
+      - name: Build, test & lint
         env:
           DALIM_KEYSTORE_FILE: /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/dalim-release.jks
           DALIM_KEYSTORE_PASSWORD: ${{ secrets.DALIM_KEYSTORE_PASSWORD }}
           DALIM_KEY_ALIAS: ${{ secrets.DALIM_KEY_ALIAS }}
           DALIM_KEY_PASSWORD: ${{ secrets.DALIM_KEY_PASSWORD }}
         run: |
-          gradle :app:assembleRelease --no-daemon --stacktrace
+          gradle :app:testDebugUnitTest :app:lintDebug :app:assembleRelease --no-daemon --stacktrace
 
       - name: Collect & rename APK
         run: |
@@ -63,6 +63,9 @@ jobs:
   release:
     name: Publish GitHub release
     needs: build
+    # Only publish from main. Feature-branch / manual validation runs
+    # build+test+lint but must not touch the tag.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

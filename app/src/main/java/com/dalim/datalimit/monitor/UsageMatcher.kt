@@ -1,6 +1,7 @@
 package com.dalim.datalimit.monitor
 
 import android.content.Context
+import com.dalim.datalimit.core.BudgetMath
 import com.dalim.datalimit.core.CountingState
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.UsageReport
@@ -39,26 +40,22 @@ class UsageMatcher(private val prefs: UsagePrefs, private val appContext: Contex
         prefs.lastConsumedBytes = consumed
         prefs.lastCheckMillis = nowMillis
 
-        val limitBytes = settings.limitMb * 1024L * 1024L
-        val effectiveLimit = if (limitBytes > 0L) limitBytes + settings.extraAllowanceMb * 1024L * 1024L else 0L
-        val limitActive = settings.limitMb > 0L
-        val usedPercent = if (limitActive && effectiveLimit > 0L) {
-            ((consumed * 100L) / effectiveLimit).toInt().coerceIn(0, 1000)
-        } else {
-            0
-        }
-        val exceeded = limitActive && effectiveLimit > 0L && consumed >= effectiveLimit
+        val budget = BudgetMath.compute(
+            consumedBytes = consumed,
+            limitMb = settings.limitMb,
+            extraAllowanceMb = settings.extraAllowanceMb
+        )
 
         return UsageReport(
             consumedBytes = consumed,
-            effectiveLimitBytes = effectiveLimit,
-            usedPercent = usedPercent,
+            effectiveLimitBytes = budget.effectiveLimitBytes,
+            usedPercent = budget.usedPercent,
             radiosRxBytes = snapshot.rxBytes,
             radiosTxBytes = snapshot.txBytes,
             windowLabel = WindowResolver.windowLabel(appContext, settings.period, settings.windowStyle),
-            exceeded = exceeded,
-            limitActive = limitActive,
-            remainingBytes = (effectiveLimit - consumed).coerceAtLeast(0L)
+            exceeded = budget.exceeded,
+            limitActive = budget.limitActive,
+            remainingBytes = budget.remainingBytes
         )
     }
 }

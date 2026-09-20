@@ -1,6 +1,7 @@
 package com.dalim.datalimit.monitor
 
 import android.net.TrafficStats
+import com.dalim.datalimit.core.util.ByteFormat
 
 class TrafficReader {
 
@@ -19,15 +20,6 @@ class TrafficReader {
     }
 
     companion object {
-        fun formatBytes(bytes: Long): String {
-            if (bytes < 0) return "0 B"
-            val b = bytes.toDouble()
-            return when {
-                b < 1024 -> "${bytes} B"
-                b < 1024 * 1024 -> String.format("%.1f KB", b / 1024)
-                b < 1024 * 1024 * 1024 -> String.format("%.2f MB", b / 1024 / 1024)
-                else -> String.format("%.2f GB", b / 1024 / 1024 / 1024)
-            }
-        }
+        fun formatBytes(bytes: Long): String = ByteFormat.format(bytes)
     }
 }
