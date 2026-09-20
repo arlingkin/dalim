@@ -30,6 +30,26 @@
             android:turnScreenOn="true"
             android:theme="@style/Theme.DataLimit.Gate" />
 
+        <activity
+            android:name=".ui.DataActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.BatteryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.NotificationsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.AppControlActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false" />
+
         <service
             android:name=".monitor.TrafficMonitorService"
             android:exported="false"

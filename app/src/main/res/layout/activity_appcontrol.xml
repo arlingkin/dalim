@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/window_bg">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:title="@string/app_control"
+        app:titleTextColor="#FFFFFF" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- ===== Firewall card ===== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/firewall_section"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#9AA0A6"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/firewall_desc"
+                        android:textSize="12sp"
+                        android:textColor="#5F6368" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchFirewall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:paddingVertical="6dp"
+                        app:useMaterialThemeColors="false"
+                        app:thumbTint="#0D47A1"
+                        app:trackTint="#B9C7D6"
+                        android:text="@string/firewall_toggle"
+                        android:textColor="#202124" />
+
+                    <TextView
+                        android:id="@+id/firewallStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/firewall_idle"
+                        android:textSize="12sp"
+                        android:textColor="#5F6368" />
+
+                    <TextView
+                        android:id="@+id/vpnPermText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/vpn_permission"
+                        android:textSize="12sp"
+                        android:textColor="@color/warn" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnVpnAllow"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/vpn_allow"
+                        android:textColor="@color/primary"
+                        app:icon="@android:drawable/ic_lock_lock" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ===== App usage ===== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_usage_sec"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#9AA0A6"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:id="@+id/usagePermText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/usage_permission_desc"
+                        android:textSize="12sp"
+                        android:textColor="#5F6368" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUsagePermission"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/open_usage_settings"
+                        android:textColor="@color/primary"
+                        app:icon="@android:drawable/ic_menu_preferences" />
+
+                    <TextView
+                        android:id="@+id/loadingText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/loading"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="#5F6368" />
+
+                    <TextView
+                        android:id="@+id/appDataEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/app_data_empty"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="#5F6368" />
+
+                    <LinearLayout
+                        android:id="@+id/appList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingTop="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

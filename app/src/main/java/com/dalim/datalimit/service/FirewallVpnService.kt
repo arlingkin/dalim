@@ -44,6 +44,10 @@ class FirewallVpnService : VpnService() {
 
     @SuppressLint("WrongThread")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_REBUILD) {
+            rebuild()
+            return START_STICKY
+        }
         startForeground(NOTIF_VPN, firewallNotification())
         rebuild()
         return START_STICKY
@@ -193,8 +197,13 @@ class FirewallVpnService : VpnService() {
 
     companion object {
         const val NOTIF_VPN = 1006
+        const val ACTION_REBUILD = "com.dalim.datalimit.action.REBUILD_FIREWALL"
         private const val BUDGET_CHECK_MILLIS = 60_000L
         private const val BYTES_PER_MB = 1024L * 1024L
+
+        fun requestRebuild(context: Context) {
+            context.startService(Intent(context, FirewallVpnService::class.java).setAction(ACTION_REBUILD))
+        }
 
         fun prepared(context: Context): Boolean =
             VpnService.prepare(context) == null
