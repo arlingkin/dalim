@@ -49,7 +49,7 @@ class InMemoryNotificationStore : INotificationStore {
         limit: Int,
         offset: Long
     ): List<VaultEntry> {
-        var result = entries
+        var result: List<VaultEntry> = entries
         if (importantOnly) result = result.filter { it.importance >= IMPORTANT_IMPORTANCE }
         if (!packageFilter.isNullOrBlank()) result = result.filter { it.packageName == packageFilter }
         if (!search.isNullOrBlank()) {

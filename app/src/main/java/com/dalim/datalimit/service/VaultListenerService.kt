@@ -27,9 +27,9 @@ class VaultListenerService : NotificationListenerService() {
         val n = sbn.notification ?: return
         if (!prefs.vaultEnabled) return
 
-        if (n.isGroupSummary) return
+        if (n.isGroupSummary()) return
         if ((n.flags and Notification.FLAG_ONGOING_EVENT) != 0) return
-        if (sbn.isOngoing) return
+        if (sbn.isOngoing()) return
 
         val extras = n.extras
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)?.toString()?.trim() ?: ""
