@@ -152,6 +152,54 @@ class UsagePrefs(context: Context) {
         get() = sp.getLong(KEY_VAULT_CLEANUP, 0L)
         set(v) = sp.edit().putLong(KEY_VAULT_CLEANUP, v).apply()
 
+    // ---- Network firewall (VPN blocklist) ----
+    var firewallEnabled: Boolean
+        get() = sp.getBoolean(KEY_FIREWALL, false)
+        set(v) = sp.edit().putBoolean(KEY_FIREWALL, v).apply()
+
+    var blockedApps: Set<String>
+        get() = sp.getStringSet(KEY_BLOCKED, emptySet())?.toSet() ?: emptySet()
+        set(v) = sp.edit().putStringSet(KEY_BLOCKED, v).apply()
+
+    fun blockApp(packageName: String) {
+        blockedApps = blockedApps + packageName
+    }
+
+    fun unblockApp(packageName: String) {
+        blockedApps = blockedApps - packageName
+    }
+
+    fun appBudgetMb(packageName: String): Long =
+        sp.getLong(KEY_APP_BUDGET_PREFIX + packageName, 0L)
+
+    fun setAppBudgetMb(packageName: String, mb: Long) {
+        val key = KEY_APP_BUDGET_PREFIX + packageName
+        val edit = sp.edit()
+        if (mb <= 0L) edit.remove(key) else edit.putLong(key, mb)
+        edit.apply()
+    }
+
+    fun budgetedPackages(): Map<String, Long> {
+        val all = sp.all
+        val out = HashMap<String, Long>()
+        for ((key, value) in all) {
+            if (key.startsWith(KEY_APP_BUDGET_PREFIX) && value is Long && value > 0L) {
+                out[key.removePrefix(KEY_APP_BUDGET_PREFIX)] = value
+            }
+        }
+        return out
+    }
+
+    fun temporaryAllowUntil(packageName: String): Long =
+        sp.getLong(KEY_TEMP_ALLOW_PREFIX + packageName, 0L)
+
+    fun setTemporaryAllow(packageName: String, untilMillis: Long) {
+        val key = KEY_TEMP_ALLOW_PREFIX + packageName
+        val edit = sp.edit()
+        if (untilMillis <= 0L) edit.remove(key) else edit.putLong(key, untilMillis)
+        edit.apply()
+    }
+
     companion object {
         private const val KEY_LIMIT = "limit_mb"
         private const val KEY_PERIOD = "period"
@@ -179,5 +227,10 @@ class UsagePrefs(context: Context) {
         private const val KEY_VAULT_ENABLED = "vault_enabled"
         private const val KEY_VAULT_RETENTION = "vault_retention_days"
         private const val KEY_VAULT_CLEANUP = "vault_last_cleanup"
+
+        private const val KEY_FIREWALL = "firewall_enabled"
+        private const val KEY_BLOCKED = "firewall_blocked"
+        private const val KEY_APP_BUDGET_PREFIX = "app_budget_"
+        private const val KEY_TEMP_ALLOW_PREFIX = "temp_allow_"
     }
 }

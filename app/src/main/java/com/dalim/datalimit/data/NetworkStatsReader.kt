@@ -36,6 +36,16 @@ class NetworkStatsReader(private val context: Context) {
         return out
     }
 
+    fun totalBytesForPackage(packageName: String, startMillis: Long, endMillis: Long): Long {
+        val uid = try {
+            context.packageManager.getApplicationInfo(packageName, 0).uid
+        } catch (_: PackageManager.NameNotFoundException) {
+            return 0L
+        }
+        if (uid <= 0) return 0L
+        return queryUid(uid, startMillis, endMillis)?.let { it.rx + it.tx } ?: 0L
+    }
+
     private fun queryUid(uid: Int, startMillis: Long, endMillis: Long): Traffic? {
         if (!collectionEnabled()) return null
         var rx = 0L
