@@ -52,7 +52,7 @@ class NetworkStatsReader(private val context: Context) {
         var tx = 0L
         for (networkType in networkTypes()) {
             try {
-                val s = nsm.querySummaryForUid(
+                val s = nsm.queryDetailsForUid(
                     networkType,
                     subscriberId(networkType),
                     startMillis,
