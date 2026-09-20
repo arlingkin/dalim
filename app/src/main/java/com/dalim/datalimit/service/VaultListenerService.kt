@@ -27,7 +27,7 @@ class VaultListenerService : NotificationListenerService() {
         val n = sbn.notification ?: return
         if (!prefs.vaultEnabled) return
 
-        if (n.isGroupSummary()) return
+        if ((n.flags and Notification.FLAG_GROUP_SUMMARY) != 0) return
         if ((n.flags and Notification.FLAG_ONGOING_EVENT) != 0) return
         if (sbn.isOngoing()) return
 
@@ -45,7 +45,7 @@ class VaultListenerService : NotificationListenerService() {
                 text = text.take(400),
                 channel = n.channelId.orEmpty(),
                 postedAtMillis = sbn.postTime,
-                importance = n.importance
+                importance = priorityToImportance(n.priority)
             )
         )
         runRetentionIfDue()
@@ -65,6 +65,19 @@ class VaultListenerService : NotificationListenerService() {
         } catch (_: PackageManager.NameNotFoundException) {
             packageName
         }
+    }
+
+    /**
+     * "Important" is derived from the stable public [Notification.priority]
+     * field (deprecated but never removed); levels map to the OS importance
+     * scale so IMPORTANCE_HIGH+ (>= 4) stays the "important" threshold.
+     */
+    private fun priorityToImportance(priority: Int): Int = when (priority) {
+        Notification.PRIORITY_MIN -> 1
+        Notification.PRIORITY_LOW -> 2
+        Notification.PRIORITY_HIGH -> 4
+        Notification.PRIORITY_MAX -> 5
+        else -> 3
     }
 
     private fun runRetentionIfDue() {

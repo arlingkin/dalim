@@ -1,11 +1,11 @@
 package com.dalim.datalimit.data
 
+import android.app.usage.NetworkStats
+import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.NetworkStats
-import android.net.NetworkStatsManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import com.dalim.datalimit.core.PackageTotal
@@ -41,26 +41,26 @@ class NetworkStatsReader(private val context: Context) {
         var rx = 0L
         var tx = 0L
         for (networkType in networkTypes()) {
-            val bucket = NetworkStats.Bucket()
             try {
-                nsm.querySummaryForUid(
+                val s = nsm.querySummaryForUid(
                     networkType,
                     subscriberId(networkType),
                     startMillis,
                     endMillis,
                     uid
-                ).use { stats ->
-                    while (stats.getNextBucket(bucket)) {
+                )
+                try {
+                    val bucket = NetworkStats.Bucket()
+                    while (s.getNextBucket(bucket)) {
                         rx += bucket.rxBytes
                         tx += bucket.txBytes
                     }
+                } finally {
+                    s.close()
                 }
-            } catch (_: SecurityException) {
-                return null
-            } catch (_: IllegalArgumentException) {
-                // subscription id mismatch etc.; skip this network type
-            } catch (_: RuntimeException) {
-                // RemoteException / other system quirks: skip
+            } catch (_: Exception) {
+                // SecurityException (no usage access), IllegalArgumentException
+                // (bad subscriber id), RemoteException: skip this network type.
             }
         }
         return Traffic(rx, tx)
