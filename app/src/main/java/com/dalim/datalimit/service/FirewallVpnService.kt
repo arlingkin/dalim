@@ -89,7 +89,7 @@ class FirewallVpnService : VpnService() {
         vpnFd?.let { runCatching { it.close() } }
         vpnFd = null
         vpnFd = try {
-            val builder = VpnService.Builder()
+            val builder = Builder()
                 .setSession(getString(R.string.vpn_session))
                 .setMtu(1280)
                 .addAddress("10.10.10.14", 32)
