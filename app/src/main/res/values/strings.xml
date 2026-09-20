@@ -85,6 +85,11 @@
     <string name="action_open_gate">Open gate</string>
     <string name="action_app_settings">App settings</string>
 
+    <string name="channel_battery_name">Battery alerts</string>
+    <string name="channel_battery_desc">Fired when the battery drops to the configured floor</string>
+    <string name="notif_battery_floor">Battery budget floor reached</string>
+    <string name="notif_battery_body">Battery is at %1$d%%, your configured minimum is %2$d%%.</string>
+
     <string name="window_daily_fixed">Daily · resets at midnight</string>
     <string name="window_rolling24">Rolling 24h window</string>
     <string name="window_weekly">Weekly · resets %1$s</string>

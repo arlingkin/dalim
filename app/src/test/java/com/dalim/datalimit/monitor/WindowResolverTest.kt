@@ -42,10 +42,12 @@ class WindowResolverTest {
     }
 
     @Test
-    fun rollingKey_anchorWhenZeroUsesNow() {
+    fun rollingKey_zeroAnchorFallsBackToNow() {
+        // With no stored anchor the resolver anchors at the current instant,
+        // so the key stays 0 until a full window elapses.
         WindowResolver.withRollingAnchor(0L)
         val now = 5_000_000L
         assertEquals(0L, WindowResolver.windowKey(Period.DAILY, WindowStyle.ROLLING, now))
-        assertEquals(1L, WindowResolver.windowKey(Period.DAILY, WindowStyle.ROLLING, now + dayMillis))
+        assertEquals(0L, WindowResolver.windowKey(Period.DAILY, WindowStyle.ROLLING, now + dayMillis - 1))
     }
 }

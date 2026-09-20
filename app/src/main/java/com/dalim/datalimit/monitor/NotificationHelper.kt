@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.dalim.datalimit.MainActivity
 import com.dalim.datalimit.R
@@ -16,9 +15,11 @@ object NotificationHelper {
 
     const val CHANNEL_MONITOR = "dalim_monitor"
     const val CHANNEL_ALERT = "dalim_alert"
+    const val CHANNEL_BATTERY = "dalim_battery"
     const val NOTIF_MONITOR = 1001
     const val NOTIF_ALERT = 1002
     const val NOTIF_GATE = 1003
+    const val NOTIF_BATTERY = 1004
 
     fun createChannels(context: Context) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -29,17 +30,25 @@ object NotificationHelper {
         ).apply { description = context.getString(R.string.channel_monitor_desc) }
         nm.createNotificationChannel(monitor)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val alert = NotificationChannel(
-                CHANNEL_ALERT,
-                context.getString(R.string.channel_alert_name),
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = context.getString(R.string.channel_alert_desc)
-                enableVibration(true)
-            }
-            nm.createNotificationChannel(alert)
+        val alert = NotificationChannel(
+            CHANNEL_ALERT,
+            context.getString(R.string.channel_alert_name),
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = context.getString(R.string.channel_alert_desc)
+            enableVibration(true)
         }
+        nm.createNotificationChannel(alert)
+
+        val battery = NotificationChannel(
+            CHANNEL_BATTERY,
+            context.getString(R.string.channel_battery_name),
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = context.getString(R.string.channel_battery_desc)
+            enableVibration(true)
+        }
+        nm.createNotificationChannel(battery)
     }
 
     fun monitoringNotification(context: Context, text: String): Notification {
@@ -95,6 +104,22 @@ object NotificationHelper {
             .setContentText(text)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(open)
+            .build()
+    }
+
+    fun batteryAlertNotification(context: Context, levelPercent: Int, floorPercent: Int): Notification {
+        val open = PendingIntent.getActivity(
+            context, 4,
+            Intent(context, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        return NotificationCompat.Builder(context, CHANNEL_BATTERY)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getString(R.string.notif_battery_floor))
+            .setContentText(context.getString(R.string.notif_battery_body, floorPercent, levelPercent))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setOnlyAlertOnce(true)
             .setContentIntent(open)
             .build()
     }

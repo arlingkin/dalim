@@ -85,6 +85,11 @@
     <string name="action_open_gate">Buka gerbang</string>
     <string name="action_app_settings">Pengaturan aplikasi</string>
 
+    <string name="channel_battery_name">Peringatan baterai</string>
+    <string name="channel_battery_desc">Dipicu saat baterai turun ke batas bawah yang diatur</string>
+    <string name="notif_battery_floor">Batas bawah anggaran baterai tercapai</string>
+    <string name="notif_battery_body">Baterai di %1$d%%, minimum yang diatur adalah %2$d%%.</string>
+
     <string name="window_daily_fixed">Harian · reset tengah malam</string>
     <string name="window_rolling24">Periode bergulir 24 jam</string>
     <string name="window_weekly">Mingguan · reset %1$s</string>

@@ -114,6 +114,31 @@ class UsagePrefs(context: Context) {
         get() = sp.getLong(KEY_LASTPOP, 0L)
         set(v) = sp.edit().putLong(KEY_LASTPOP, v).apply()
 
+    // ---- Battery module ----
+    var batteryBudgetFloor: Int
+        get() = sp.getInt(KEY_BAT_FLOOR, 20)
+        set(v) = sp.edit().putInt(KEY_BAT_FLOOR, v.coerceIn(0, 100)).apply()
+
+    var batteryBudgetStart: Int
+        get() = sp.getInt(KEY_BAT_START, 100)
+        set(v) = sp.edit().putInt(KEY_BAT_START, v.coerceIn(0, 100)).apply()
+
+    var batteryAlertsEnabled: Boolean
+        get() = sp.getBoolean(KEY_BAT_ALERTS, true)
+        set(v) = sp.edit().putBoolean(KEY_BAT_ALERTS, v).apply()
+
+    var batteryAlertSent: Boolean
+        get() = sp.getBoolean(KEY_BAT_ALERT_SENT, false)
+        set(v) = sp.edit().putBoolean(KEY_BAT_ALERT_SENT, v).apply()
+
+    var batterySampleRealtime: Long
+        get() = sp.getLong(KEY_BAT_SAMPLE_TS, 0L)
+        set(v) = sp.edit().putLong(KEY_BAT_SAMPLE_TS, v).apply()
+
+    var batterySampleLevel: Int
+        get() = sp.getInt(KEY_BAT_SAMPLE_LEVEL, -1)
+        set(v) = sp.edit().putInt(KEY_BAT_SAMPLE_LEVEL, v).apply()
+
     companion object {
         private const val KEY_LIMIT = "limit_mb"
         private const val KEY_PERIOD = "period"
@@ -130,5 +155,12 @@ class UsagePrefs(context: Context) {
         private const val KEY_BASELINE = "baseline"
         private const val KEY_GATEPOPPED = "gate_popped"
         private const val KEY_LASTPOP = "last_pop"
+
+        private const val KEY_BAT_FLOOR = "battery_floor"
+        private const val KEY_BAT_START = "battery_start"
+        private const val KEY_BAT_ALERTS = "battery_alerts"
+        private const val KEY_BAT_ALERT_SENT = "battery_alert_sent"
+        private const val KEY_BAT_SAMPLE_TS = "battery_sample_ts"
+        private const val KEY_BAT_SAMPLE_LEVEL = "battery_sample_level"
     }
 }
