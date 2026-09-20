@@ -94,4 +94,6 @@
     <string name="window_rolling24">Periode bergulir 24 jam</string>
     <string name="window_weekly">Mingguan · reset %1$s</string>
     <string name="window_monthly">Bulanan · reset pada %1$s</string>
+
+    <string name="notification_vault">Lembaran Notifikasi</string>
 </resources>

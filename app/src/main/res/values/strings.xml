@@ -94,4 +94,6 @@
     <string name="window_rolling24">Rolling 24h window</string>
     <string name="window_weekly">Weekly · resets %1$s</string>
     <string name="window_monthly">Monthly · resets on %1$s</string>
+
+    <string name="notification_vault">Notification Vault</string>
 </resources>

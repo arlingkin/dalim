@@ -139,6 +139,19 @@ class UsagePrefs(context: Context) {
         get() = sp.getInt(KEY_BAT_SAMPLE_LEVEL, -1)
         set(v) = sp.edit().putInt(KEY_BAT_SAMPLE_LEVEL, v).apply()
 
+    // ---- Notification vault ----
+    var vaultEnabled: Boolean
+        get() = sp.getBoolean(KEY_VAULT_ENABLED, false)
+        set(v) = sp.edit().putBoolean(KEY_VAULT_ENABLED, v).apply()
+
+    var vaultRetentionDays: Int
+        get() = sp.getInt(KEY_VAULT_RETENTION, 7)
+        set(v) = sp.edit().putInt(KEY_VAULT_RETENTION, v.coerceIn(1, 365)).apply()
+
+    var vaultLastCleanup: Long
+        get() = sp.getLong(KEY_VAULT_CLEANUP, 0L)
+        set(v) = sp.edit().putLong(KEY_VAULT_CLEANUP, v).apply()
+
     companion object {
         private const val KEY_LIMIT = "limit_mb"
         private const val KEY_PERIOD = "period"
@@ -162,5 +175,9 @@ class UsagePrefs(context: Context) {
         private const val KEY_BAT_ALERT_SENT = "battery_alert_sent"
         private const val KEY_BAT_SAMPLE_TS = "battery_sample_ts"
         private const val KEY_BAT_SAMPLE_LEVEL = "battery_sample_level"
+
+        private const val KEY_VAULT_ENABLED = "vault_enabled"
+        private const val KEY_VAULT_RETENTION = "vault_retention_days"
+        private const val KEY_VAULT_CLEANUP = "vault_last_cleanup"
     }
 }
