@@ -1,5 +1,6 @@
 package com.dalim.datalimit.data
 
+import android.annotation.SuppressLint
 import android.app.usage.NetworkStats
 import android.app.usage.NetworkStatsManager
 import android.content.Context
@@ -117,6 +118,7 @@ class NetworkStatsReader(private val context: Context) {
         return types.toIntArray()
     }
 
+    @SuppressLint("MissingPermission")
     private fun subscriberId(networkType: Int): String? {
         if (networkType == NetworkCapabilities.TRANSPORT_CELLULAR && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
