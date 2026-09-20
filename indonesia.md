@@ -1,7 +1,7 @@
 # 🌟 Data Limit (dalim) — Bahasa Indonesia 🇮🇩
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Rilis](https://img.shields.io/badge/rilis-v0.3.1-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.3.1)
+[![Rilis](https://img.shields.io/badge/rilis-v0.4.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.4.0)
 
 > 🔎 Butuh versi **English**? Lihat → [README.md](README.md)
 
@@ -22,6 +22,11 @@ pemakaian** otomatis sesuai yang Anda atur: **harian**, **mingguan**, atau
 **English** dan **Bahasa Indonesia** lewat pengaturan **LANGUAGE** di dalam
 aplikasi, tanpa harus mengubah bahasa sistem.
 
+🧠 **DALIM Core (v0.4.0)** — aplikasi dibangun ulang di atas mesin pemantauan
+yang melacak **data**, **baterai**, **kubah notifikasi**, dan **firewall per
+aplikasi**, semuanya dari dasbor kartu yang didesain ulang — tanpa menambah
+dependensi baru.
+
 ---
 
 ## 📥 Download
@@ -31,10 +36,10 @@ rilis** 🔐. Dapat dipasang di **Android 8.0+** (API 26).
 
 | Versi | Tipe | Download |
 |-------|------|----------|
-| `v0.3.1` | Produksi · Ditandatangani | [datalimit-0.3.1-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.3.1/datalimit-0.3.1-signed.apk) |
+| `v0.4.0` | Produksi · Ditandatangani | [datalimit-0.4.0-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.4.0/datalimit-0.4.0-signed.apk) |
 
-- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.3.1](https://github.com/arlingkin/dalim/releases/tag/v0.3.1)
-- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.3.1/SHA256SUMS.txt)
+- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.4.0](https://github.com/arlingkin/dalim/releases/tag/v0.4.0)
+- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.4.0/SHA256SUMS.txt)
 
 Versi uji sebelumnya (`v0.2.x-pre`, tanpa tanda tangan / debug-signed) masih
 tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
@@ -47,8 +52,11 @@ tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
 |------|--------|
 | Jenis anggaran | Harian · Mingguan · Bulanan |
 | Gaya periode | Tetap (reset tengah malam) / Bergulir 24 jam |
-| Dasbor | Gauge terpakai / batas / sisa, RX & TX, waktu cek terakhir |
+| Dasbor | Kartu langsung: Data (gauge, RX & TX, waktu cek) · Baterai · Kubah · Kontrol aplikasi · Pengaturan |
 | Gerbang data | Overlay pemblokiran layar penuh di atas aplikasi apa pun + peringatan layar penuh yang muncul lagi, pintu darurat "+100 MB" |
+| Panel baterai | Tegangan / suhu / laju pengurasan, perkiraan waktu habis, peringatan pengisian, penghentian saat baterai nyaris habis |
+| Kubah notifikasi | Riwayat peringatan berbasis SQLite dengan retensi 3 / 7 / 30 hari, bisa dicari |
+| Firewall | Blokir per aplikasi + anggaran per aplikasi lewat **VPN** lokal (Android 8+, tanpa root), izin sementara hingga waktu tertentu |
 | Autostart | Pemantauan dilanjutkan otomatis setelah perangkat reboot |
 | Izin | Alur sekali sentuh untuk Akses Penggunaan, Overlay, Notifikasi |
 | Bahasa | English · Bahasa Indonesia (ganti lewat aplikasi) |
@@ -60,10 +68,11 @@ tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
 | Izin | Alasan |
 |------|--------|
 | `PACKAGE_USAGE_STATS` | Membaca total pemakaian seluler/Wi-Fi secara akurat |
-| `SYSTEM_ALERT_WINDOW` | Menampilkan overlay gerbang data yang memblokir |
+| `SYSTEM_ALERT_WINDOW` | Menampilkan overlay gerbang data / penghentian baterai |
 | `POST_NOTIFICATIONS` | Menampilkan peringatan prioritas tinggi |
 | `FOREGROUND_SERVICE` + `dataSync` | Menjaga penghitung tetap berjalan di latar belakang |
 | `RECEIVE_BOOT_COMPLETED` | Memulai pemantauan otomatis setelah reboot |
+| (tidak ada – VPN) | Firewall per aplikasi memakai **`VpnService`** lokal (tanpa izin khusus) |
 
 ---
 
@@ -99,7 +108,7 @@ Setiap push ke `main` (atau **Run** manual) membuat APK rilis yang
 **ditandatangani** melalui **GitHub Actions**, menggunakan keystore rilis
 yang dipulihkan dari secret repositori (`DALIM_KEYSTORE_RELEASES` plus
 `DALIM_KEYSTORE_PASSWORD`, `DALIM_KEY_ALIAS`, `DALIM_KEY_PASSWORD`), lalu
-mempublikasikannya sebagai rilis GitHub penuh (`v0.3.0` dan seterusnya)
+mempublikasikannya sebagai rilis GitHub penuh (`v0.4.0` dan seterusnya)
 dengan checksum `SHA256SUMS.txt`.
 
 ---
@@ -107,10 +116,9 @@ dengan checksum `SHA256SUMS.txt`.
 ## 🗺️ Peta Jalan
 
 - 📡 Modul root/sistem opsional untuk benar-benar mematikan radio
-- 📱 Rincian pemakaian data per aplikasi
-- 🔔 Peringatan di 80% / 90%
 - 📅 Penjadwalan (mis. "akhir pekan tanpa batas")
 - 💾 Ekspor/impor konfigurasi
+- 📈 Riwayat koneksi / grafik laporan harian
 
 ---
 
