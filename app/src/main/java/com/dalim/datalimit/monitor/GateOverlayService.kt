@@ -77,7 +77,7 @@ class GateOverlayService : Service() {
         val big = view.findViewById<TextView>(R.id.gateLimitText)
         val allow = view.findViewById<View>(R.id.btnAllow)
         val reset = view.findViewById<View>(R.id.btnReset)
-        val dismiss = view.findViewById<View>(R.id.btnDismiss)
+        val dismiss = view.findViewById<TextView>(R.id.btnDismiss)
 
         if (batteryMode) {
             heading.setText(R.string.battery_gate_title)
