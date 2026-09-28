@@ -11,10 +11,15 @@ import android.os.Looper
 import androidx.core.content.ContextCompat
 import com.dalim.datalimit.R
 import com.dalim.datalimit.core.BatterySnapshot
+import com.dalim.datalimit.core.HistoryBuckets
 import com.dalim.datalimit.core.LocaleHelper
+import com.dalim.datalimit.core.Schedule
 import com.dalim.datalimit.core.UsagePrefs
+import com.dalim.datalimit.core.UsageReport
 import com.dalim.datalimit.data.BatteryHistoryStore
+import com.dalim.datalimit.data.UsageHistoryStore
 import com.dalim.datalimit.ui.DataGateActivity
+import java.time.LocalDate
 
 class TrafficMonitorService : Service() {
 
@@ -33,6 +38,12 @@ class TrafficMonitorService : Service() {
     private val nm: NotificationManager by lazy {
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
+
+    private var lastSnapshotRx = 0L
+    private var lastSnapshotTx = 0L
+    private var historySeeded = false
+    private var lastHistoryPurgeAt = 0L
+    private val usageHistory by lazy { UsageHistoryStore(applicationContext) }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -77,16 +88,20 @@ class TrafficMonitorService : Service() {
         val now = System.currentTimeMillis()
         val report = matcher.compute(now)
         val batteryHalt = batteryFloorActive()
+        val scheduleHalt = scheduleHaltActive()
 
-        pollInterval = if (report.exceeded || batteryHalt || report.usedPercent >= 80) {
+        recordHistory(now, report)
+
+        pollInterval = if (report.exceeded || batteryHalt || scheduleHalt || report.usedPercent >= 80) {
             FAST_POLL_MS
         } else {
             BASE_POLL_MS
         }
 
-        if (!report.exceeded && !batteryHalt) {
+        if (!report.exceeded && !batteryHalt && !scheduleHalt) {
             nm.cancel(NotificationHelper.NOTIF_ALERT)
             nm.cancel(NotificationHelper.NOTIF_BATTERY)
+            nm.cancel(NotificationHelper.NOTIF_SCHEDULE)
             GateOverlayService.stop(this)
             prefs.gatePopped = false
             prefs.lastPopMillis = 0L
@@ -100,6 +115,13 @@ class TrafficMonitorService : Service() {
                 NotificationHelper.NOTIF_BATTERY,
                 NotificationHelper.batteryAlertNotification(this, batterySnapshot()?.levelPercent ?: -1, prefs.batteryBudgetFloor)
             )
+        } else if (scheduleHalt) {
+            // Outside the active schedule window: show the schedule gate
+            // overlay (no data actions) and re-post the schedule alert on every
+            // fast poll until the window opens again.
+            GateOverlayService.ensureRunning(this, schedule = true)
+            nm.cancel(NotificationHelper.NOTIF_SCHEDULE)
+            nm.notify(NotificationHelper.NOTIF_SCHEDULE, NotificationHelper.scheduleAlertNotification(this))
         } else if (prefs.gateEnabled) {
             // Halt: hit the limit, so open the red gate (data-limit screen)
             // directly. It re-pops on every fast poll tick — with no throttle
@@ -165,6 +187,57 @@ class TrafficMonitorService : Service() {
     }
 
     /**
+     * True while `now` falls outside the configured schedule window and the
+     * snooze (set from the schedule gate overlay) has not covered it yet.
+     * Entering the window clears the snooze.
+     */
+    private fun scheduleHaltActive(): Boolean {
+        val now = System.currentTimeMillis()
+        val outside = Schedule.outsideSchedule(
+            prefs.scheduleWindowStyle,
+            prefs.scheduleStartMin,
+            prefs.scheduleEndMin,
+            now
+        )
+        if (!outside || prefs.scheduleWindowStyle == Schedule.WindowStyle.OFF) {
+            if (prefs.scheduleSnoozeUntilMillis != 0L) prefs.scheduleSnoozeUntilMillis = 0L
+            return false
+        }
+        val snoozeUntil = prefs.scheduleSnoozeUntilMillis
+        return snoozeUntil == 0L || now >= snoozeUntil
+    }
+
+    /**
+     * Accumulate daily radio deltas into the usage-history store. The first
+     * tick anchors on the current snapshot (so nothing is counted before the
+     * service starts); afterwards every fast/regular poll records the positive
+     * delta since the previous tick, re-anchoring after a reboot reset. History
+     * rows are daily buckets only, which the chart aggregates further.
+     */
+    private fun recordHistory(now: Long, report: UsageReport) {
+        if (!historySeeded) {
+            historySeeded = true
+            lastSnapshotRx = report.radiosRxBytes
+            lastSnapshotTx = report.radiosTxBytes
+            usageHistory.backfillFromCurrent(now, report.radiosRxBytes, report.radiosTxBytes)
+            usageHistory.purgeOlderThan(UsageHistoryStore.RETENTION_DAYS + UsageHistoryStore.MAX_BUCKETS, now)
+            lastHistoryPurgeAt = now
+            return
+        }
+        val rx = HistoryBuckets.computeDelta(lastSnapshotRx, report.radiosRxBytes)
+        val tx = HistoryBuckets.computeDelta(lastSnapshotTx, report.radiosTxBytes)
+        if (rx > 0L || tx > 0L) {
+            usageHistory.insert(LocalDate.now().toEpochDay(), rx, tx)
+        }
+        lastSnapshotRx = report.radiosRxBytes
+        lastSnapshotTx = report.radiosTxBytes
+        if (now - lastHistoryPurgeAt >= DAY_MS) {
+            usageHistory.purgeOlderThan(UsageHistoryStore.RETENTION_DAYS, now)
+            lastHistoryPurgeAt = now
+        }
+    }
+
+    /**
      * Launches the full-screen DataGateActivity on top of whatever app is open.
      * Called on every fast poll tick while the limit stays exceeded, so the red
      * gate always opens/re-opens directly. Works from the background while the
@@ -196,6 +269,7 @@ class TrafficMonitorService : Service() {
     companion object {
         private const val BASE_POLL_MS = 60_000L
         private const val FAST_POLL_MS = 10_000L
+        private const val DAY_MS = 86_400_000L
 
         const val ACTION_RESET = "com.dalim.datalimit.action.RESET"
         const val ACTION_STOP = "com.dalim.datalimit.action.STOP"

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.dalim.datalimit.core.BatterySnapshot
 import com.dalim.datalimit.core.LocaleHelper
+import com.dalim.datalimit.core.Schedule
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.util.ByteFormat
 import com.dalim.datalimit.data.SqliteNotificationStore
@@ -20,6 +21,7 @@ import com.dalim.datalimit.monitor.UsageMatcher
 import com.dalim.datalimit.ui.AppControlActivity
 import com.dalim.datalimit.ui.BatteryActivity
 import com.dalim.datalimit.ui.DataActivity
+import com.dalim.datalimit.ui.HistoryActivity
 import com.dalim.datalimit.ui.NotificationsActivity
 import com.dalim.datalimit.ui.SettingsActivity
 
@@ -72,6 +74,9 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<android.view.View>(R.id.cardData).setOnClickListener {
             startActivity(Intent(this, DataActivity::class.java))
+        }
+        findViewById<android.view.View>(R.id.historyLinkText).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
         }
         findViewById<android.view.View>(R.id.cardBattery).setOnClickListener {
             startActivity(Intent(this, BatteryActivity::class.java))
@@ -129,6 +134,7 @@ class MainActivity : AppCompatActivity() {
 
         used.text = ByteFormat.format(report.consumedBytes)
         status.text = getString(if (prefs.monitoringEnabled) R.string.monitor_on else R.string.monitor_off)
+        renderScheduleStatus()
 
         val sub = findViewById<android.widget.TextView>(R.id.cardDataSub)
         if (report.limitActive) {
@@ -198,6 +204,33 @@ class MainActivity : AppCompatActivity() {
         lastBatteryAtMillis = SystemClock.elapsedRealtime()
         return snap
     }
+
+    private fun renderScheduleStatus() {
+        val line = findViewById<android.widget.TextView>(R.id.scheduleStatusText)
+        val style = prefs.scheduleWindowStyle
+        if (style == Schedule.WindowStyle.OFF) {
+            line.visibility = android.view.View.GONE
+            return
+        }
+        val dayLabel = when (style) {
+            Schedule.WindowStyle.WEEKDAYS -> getString(R.string.schedule_weekdays)
+            Schedule.WindowStyle.WEEKEND -> getString(R.string.schedule_weekend)
+            Schedule.WindowStyle.EVERYDAY -> getString(R.string.schedule_everyday)
+            else -> getString(R.string.schedule_custom)
+        }
+        val start = scheduleClock(prefs.scheduleStartMin)
+        val end = scheduleClock(prefs.scheduleEndMin)
+        line.text = getString(R.string.schedule_status_fmt, dayLabel, start, end)
+        line.visibility = android.view.View.VISIBLE
+    }
+
+    private fun scheduleClock(minutes: Int): String =
+        String.format(
+            java.util.Locale.ROOT,
+            "%02d:%02d",
+            (minutes / 60).coerceIn(0, 23),
+            minutes % 60
+        )
 
     private fun renderVault() {
         val enabled = prefs.vaultEnabled

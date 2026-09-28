@@ -192,4 +192,29 @@
     <string name="granted">Granted</string>
     <string name="reset_vault">Clear notification vault</string>
     <string name="firewall_off">Firewall off</string>
+
+    <string name="history_title">Usage history</string>
+    <string name="history_subtitle">Daily · weekly · monthly</string>
+    <string name="history_totals_empty">no data yet</string>
+    <string name="history_totals_fmt">▼ %1$s  ▲ %2$s</string>
+    <string name="history_empty">No usage history yet. Totals build while monitoring runs.</string>
+    <string name="history_hint">One row per day, kept for 13 months.</string>
+    <string name="history_scope_hint">Bars show the last 12 periods.</string>
+
+    <string name="schedule_section">SCHEDULE</string>
+    <string name="schedule_off">Off</string>
+    <string name="schedule_weekdays">Weekdays</string>
+    <string name="schedule_weekend">Weekend</string>
+    <string name="schedule_everyday">Every day</string>
+    <string name="schedule_custom">Custom</string>
+    <string name="schedule_hint">Outside the active window, data is gated on the selected days.</string>
+    <string name="schedule_custom_start">Starts %1$s</string>
+    <string name="schedule_custom_end">Ends %1$s</string>
+    <string name="schedule_preview_fmt">%1$s · %2$s–%3$s</string>
+    <string name="schedule_status_fmt">Schedule: %1$s · %2$s–%3$s</string>
+    <string name="schedule_resumes_fmt">resumes %1$s</string>
+
+    <string name="schedule_gate_title">SCHEDULE GATE</string>
+    <string name="schedule_gate_info_fmt">Data is gated while outside the schedule window.</string>
+    <string name="schedule_gate_snooze">Snooze until the window opens</string>
 </resources>
