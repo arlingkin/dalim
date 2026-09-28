@@ -73,6 +73,53 @@ class UsagePrefs(context: Context) {
             .apply()
     }
 
+    /** Export a full snapshot of every user-configurable field (M2 export). */
+    fun toPatch(): UsagePrefsPatch =
+        UsagePrefsPatch(
+            limitMb = limitMb,
+            period = period,
+            windowStyle = windowStyle,
+            gateEnabled = gateEnabled,
+            notificationsEnabled = notificationsEnabled,
+            language = language,
+            firewallEnabled = firewallEnabled,
+            blockedApps = blockedApps,
+            appBudgetsMb = budgetedPackages(),
+            batteryFloor = batteryBudgetFloor,
+            batteryAlertsEnabled = batteryAlertsEnabled,
+            scheduleStyle = scheduleWindowStyle,
+            scheduleStartMin = scheduleStartMin,
+            scheduleEndMin = scheduleEndMin
+        )
+
+    /**
+     * Import a snapshot from config exchange (M2 import). Applies the whole
+     * patch in one SharedPreferences edit; a failed parse must never call this.
+     */
+    fun apply(patch: UsagePrefsPatch) {
+        val edit = sp.edit()
+            .putLong(KEY_LIMIT, patch.limitMb.coerceAtLeast(0L))
+            .putString(KEY_PERIOD, patch.period.name)
+            .putString(KEY_STYLE, patch.windowStyle.name)
+            .putBoolean(KEY_GATE, patch.gateEnabled)
+            .putBoolean(KEY_NOTIFY, patch.notificationsEnabled)
+            .putString(KEY_LANG, patch.language)
+            .putBoolean(KEY_FIREWALL, patch.firewallEnabled)
+            .putInt(KEY_BAT_FLOOR, patch.batteryFloor.coerceIn(0, 100))
+            .putBoolean(KEY_BAT_ALERTS, patch.batteryAlertsEnabled)
+            .putString(KEY_SCHEDULE_STYLE, patch.scheduleStyle.code)
+            .putInt(KEY_SCHEDULE_START, patch.scheduleStartMin.coerceIn(0, Schedule.MINUTES_PER_DAY - 1))
+            .putInt(KEY_SCHEDULE_END, patch.scheduleEndMin.coerceIn(0, Schedule.MINUTES_PER_DAY - 1))
+            .putStringSet(KEY_BLOCKED, patch.blockedApps)
+
+        val budgets = patch.appBudgetsMb
+        for ((pkg, mb) in budgets) edit.putLong(KEY_APP_BUDGET_PREFIX + pkg, mb.coerceAtLeast(0L))
+        for (pkg in budgetedPackages().keys) {
+            if (pkg !in budgets) edit.remove(KEY_APP_BUDGET_PREFIX + pkg)
+        }
+        edit.apply()
+    }
+
     var countingState: CountingState?
         get() {
             if (!sp.contains(KEY_WINDOW)) return null
@@ -180,6 +227,11 @@ class UsagePrefs(context: Context) {
         get() = sp.getLong(KEY_VAULT_CLEANUP, 0L)
         set(v) = sp.edit().putLong(KEY_VAULT_CLEANUP, v).apply()
 
+    // ---- Animations ----
+    var reduceMotion: Boolean
+        get() = sp.getBoolean(KEY_REDUCE_MOTION, false)
+        set(v) = sp.edit().putBoolean(KEY_REDUCE_MOTION, v).apply()
+
     // ---- Network firewall (VPN blocklist) ----
     var firewallEnabled: Boolean
         get() = sp.getBoolean(KEY_FIREWALL, false)
@@ -267,5 +319,7 @@ class UsagePrefs(context: Context) {
         private const val KEY_BLOCKED = "firewall_blocked"
         private const val KEY_APP_BUDGET_PREFIX = "app_budget_"
         private const val KEY_TEMP_ALLOW_PREFIX = "temp_allow_"
+
+        private const val KEY_REDUCE_MOTION = "reduce_motion"
     }
 }

@@ -23,6 +23,8 @@ import com.google.android.material.slider.Slider
 class BatteryActivity : AppCompatActivity() {
 
     private lateinit var prefs: UsagePrefs
+    private var lastLevel = -1
+    private var entranceAnimated = false
 
     private lateinit var batteryLevelText: TextView
     private lateinit var batteryStatusText: TextView
@@ -102,6 +104,10 @@ class BatteryActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadBudget()
+        if (!entranceAnimated && Anim.enabled(prefs)) {
+            entranceAnimated = true
+            Anim.fadeSlideIn(batteryChart, Anim.enabled(prefs))
+        }
         render()
         handler.postDelayed(refreshTick, 5_000L)
     }
@@ -188,13 +194,15 @@ class BatteryActivity : AppCompatActivity() {
             val series = history.series(24, System.currentTimeMillis())
             runOnUiThread {
                 batteryChart.setSeries(series)
+                batteryChart.revealLine(Anim.enabled(prefs))
                 batteryChartHint.visibility = if (series.size < 2) View.VISIBLE else View.GONE
             }
         }.apply { isDaemon = true }.start()
     }
 
     private fun renderSnapshot(snapshot: BatterySnapshot) {
-        batteryLevelText.text = "${snapshot.levelPercent}%"
+        Anim.countTo(batteryLevelText, lastLevel, snapshot.levelPercent, { "$it%" }, Anim.enabled(prefs))
+        lastLevel = snapshot.levelPercent
         batteryStatusText.text = getString(statusString(snapshot.status))
 
         batteryEstimateText.text = when {

@@ -1,11 +1,13 @@
 package com.dalim.datalimit.ui
 
 import android.annotation.SuppressLint
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import com.dalim.datalimit.R
 import com.dalim.datalimit.core.HistoryBuckets
 import com.dalim.datalimit.core.util.ByteFormat
@@ -46,6 +48,33 @@ class UsageBarChartView @JvmOverloads constructor(
 
     private var buckets: List<HistoryBuckets.Bucket> = emptyList()
 
+    /** 0f..1f multiplier for bar heights; 1f instantly when reduce-motion is on. */
+    private var reveal = 1f
+    private var animatedOnce = false
+
+    /**
+     * Reveal the bars on first real data (M4): grow bar heights 0 -> 1. Paints
+     * instantly when [enabled] is false (reduce-motion) and is idempotent.
+     */
+    fun revealBars(enabled: Boolean) {
+        if (!enabled || animatedOnce) {
+            reveal = 1f
+            invalidate()
+            return
+        }
+        animatedOnce = true
+        reveal = 0f
+        ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 500L
+            interpolator = DecelerateInterpolator()
+            addUpdateListener {
+                reveal = it.animatedValue as Float
+                invalidate()
+            }
+            start()
+        }
+    }
+
     /** Feed a new series (oldest first); renders on the next draw pass. */
     fun setSeries(newBuckets: List<HistoryBuckets.Bucket>) {
         if (newBuckets == buckets) return
@@ -77,7 +106,7 @@ class UsageBarChartView @JvmOverloads constructor(
 
         for ((index, bucket) in buckets.withIndex()) {
             val total = (bucket.rxBytes + bucket.txBytes).coerceAtLeast(0L)
-            val barH = plotH * (total.toFloat() / max).coerceIn(0f, 1f)
+            val barH = plotH * (total.toFloat() / max).coerceIn(0f, 1f) * reveal
             val cx = left + slot * index + slot / 2f
             val x = cx - barW / 2f
             val y = bottom - barH

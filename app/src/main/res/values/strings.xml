@@ -217,4 +217,16 @@
     <string name="schedule_gate_title">SCHEDULE GATE</string>
     <string name="schedule_gate_info_fmt">Data is gated while outside the schedule window.</string>
     <string name="schedule_gate_snooze">Snooze until the window opens</string>
+
+    <string name="config_section">CONFIG</string>
+    <string name="export_config">Export config</string>
+    <string name="import_config">Import config</string>
+    <string name="config_hint">Back up your limits, schedule, firewall and battery settings as a JSON file, or restore them on another device.</string>
+    <string name="snack_config_exported">Config exported</string>
+    <string name="snack_config_export_failed">Could not write the config file</string>
+    <string name="snack_config_imported">Config imported</string>
+    <string name="snack_config_invalid">This file is not a valid DALIM config</string>
+
+    <string name="reduce_motion">Reduce motion</string>
+    <string name="reduce_motion_hint">Turn off entrance and value-change animations.</string>
 </resources>
