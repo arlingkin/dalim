@@ -55,10 +55,10 @@ class BatteryLevelChartView @JvmOverloads constructor(
         super.onDraw(canvas)
         if (points.size < 2) return
 
-        val left = pad
-        val right = width - pad
-        val top = pad
-        val bottom = height - pad
+        val left = pad.toFloat()
+        val right = width.toFloat() - pad
+        val top = pad.toFloat()
+        val bottom = height.toFloat() - pad
         val plotW = right - left
         val plotH = bottom - top
 
