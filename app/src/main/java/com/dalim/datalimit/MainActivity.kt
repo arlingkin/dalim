@@ -61,7 +61,10 @@ class MainActivity : AppCompatActivity() {
                 renderVault()
             } catch (_: Throwable) {
             }
-            renderBattery()
+            try {
+                renderBattery()
+            } catch (_: Throwable) {
+            }
             handler.postDelayed(this, 5_000L)
         }
     }

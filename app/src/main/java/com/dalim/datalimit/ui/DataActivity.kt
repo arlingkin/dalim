@@ -69,9 +69,14 @@ class DataActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val refreshTick = object : Runnable {
         override fun run() {
-            render()
-            if (System.currentTimeMillis() - lastChartAtMillis >= 30_000L) {
-                refreshAppChart()
+            try {
+                render()
+                if (System.currentTimeMillis() - lastChartAtMillis >= 30_000L) {
+                    refreshAppChart()
+                }
+            } catch (_: Throwable) {
+                // Render failures must never take the screen down; recover on
+                // the next 5 s tick.
             }
             handler.postDelayed(this, 5_000L)
         }
