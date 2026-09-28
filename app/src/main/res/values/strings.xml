@@ -3,6 +3,8 @@
     <string name="app_subtitle">Track. Limit. Gate.</string>
 
     <string name="data_used">DATA USED</string>
+    <string name="network_usage">NETWORK USAGE · THIS WINDOW</string>
+    <string name="app_chart_empty">No per-app usage data yet.</string>
     <string name="zero_bytes">0 B</string>
     <string name="placeholder_left">— left</string>
     <string name="placeholder_limit">limit: —</string>
@@ -107,6 +109,8 @@
     <string name="card_data_off">No data limit set</string>
     <string name="card_battery_fmt">%1$d%% · %2$s</string>
     <string name="battery_charging_short">charging</string>
+    <string name="battery_history">BATTERY · LAST 24 H</string>
+    <string name="battery_chart_hint">History builds as monitoring runs (a sample about every minute).</string>
     <string name="battery_no_estimate">no estimate</string>
     <string name="card_vault_fmt">%1$d saved</string>
     <string name="card_vault_off">Vault off</string>

@@ -3,7 +3,7 @@
 > 🇮🇩 **Bahasa Indonesia?** Baca → [indonesia.md](indonesia.md)
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Release](https://img.shields.io/badge/release-v0.4.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.4.0)
+[![Release](https://img.shields.io/badge/release-v0.4.25-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.4.25)
 
 Track your data usage on Android and automatically enforce a budget you
 configure: **daily**, **weekly**, or **monthly**. The interface is
@@ -28,10 +28,10 @@ keystore. Install on Android 8.0+ (API 26).
 
 | Version | Type | Download |
 |---------|------|----------|
-| `v0.4.0` | Production · signed | [datalimit-0.4.0-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.4.0/datalimit-0.4.0-signed.apk) |
+| `v0.4.25` | Production · signed | [datalimit-0.4.25-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.4.25/datalimit-0.4.25-signed.apk) |
 
-- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.4.0](https://github.com/arlingkin/dalim/releases/tag/v0.4.0)
-- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.4.0/SHA256SUMS.txt)
+- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.4.25](https://github.com/arlingkin/dalim/releases/tag/v0.4.25)
+- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.4.25/SHA256SUMS.txt)
 
 Earlier testing builds (`v0.2.x-pre`, unsigned / debug-signed) are still
 available on the [releases page](https://github.com/arlingkin/dalim/releases).
@@ -44,7 +44,9 @@ available on the [releases page](https://github.com/arlingkin/dalim/releases).
 | Window styles | Fixed (midnight reset) / Rolling 24 h |
 | Dashboard | Live cards: Data (gauge, RX & TX, last check) · Battery · Vault · App control · Settings |
 | Gate | Full-screen blocking overlay over any app + re-popping full-screen alert, "+100 MB" escape hatch |
-| Battery panel | Voltage / temperature / drain-rate, time-to-empty estimate, charge alerts, battery-floor halt |
+| Battery panel | Voltage / temperature / drain-rate, time-to-empty estimate, charge alerts, **battery-floor halt**, 24 h history chart |
+| Notifications vault | SQLite-backed history of alerts with 3 / 7 / 30-day retention, searchable |
+| Network chart | Per-app usage bars for the current window on the DATA screen |
 | Notifications vault | SQLite-backed history of alerts with 3 / 7 / 30-day retention, searchable |
 | Firewall | Per-app blocking + per-app budgets via local **VPN** (Android 8+, no root), temporary allow-until blocks |
 | Autostart | Monitoring resumes after reboot |

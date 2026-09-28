@@ -13,6 +13,7 @@ import com.dalim.datalimit.R
 import com.dalim.datalimit.core.BatterySnapshot
 import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.UsagePrefs
+import com.dalim.datalimit.data.BatteryHistoryStore
 import com.dalim.datalimit.ui.DataGateActivity
 
 class TrafficMonitorService : Service() {
@@ -138,13 +139,15 @@ class TrafficMonitorService : Service() {
         ) ?: return null
         val read = BatteryMonitor.readFromIntent(sticky)
         if (read.level < 0) return null
-        return BatteryMonitor(prefs).update(
+        val snap = BatteryMonitor(prefs).update(
             level = read.level,
             status = read.status,
             plugged = read.plugged,
             temperatureTenthsC = read.temperatureTenthsC,
             voltageMv = read.voltageMv
         )
+        BatteryHistoryStore(applicationContext).append(System.currentTimeMillis(), read.level)
+        return snap
     }
 
     /**
@@ -152,8 +155,8 @@ class TrafficMonitorService : Service() {
      * floor gate enabled and not snoozed. Charging clears any snooze.
      */
     private fun batteryFloorActive(): Boolean {
-        if (!prefs.batteryFloorGateEnabled) return false
         val snap = batterySnapshot() ?: return false
+        if (!prefs.batteryFloorGateEnabled) return false
         if (snap.plugged != 0) {
             if (prefs.batteryFloorGateSnoozed) prefs.batteryFloorGateSnoozed = false
             return false

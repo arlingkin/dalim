@@ -3,6 +3,8 @@
     <string name="app_subtitle">Lacak. Batasi. Gerbang.</string>
 
     <string name="data_used">DATA TERPAKAI</string>
+    <string name="network_usage">PEMAKAIAN JARINGAN · PERIODE INI</string>
+    <string name="app_chart_empty">Belum ada data pemakaian per aplikasi.</string>
     <string name="zero_bytes">0 B</string>
     <string name="placeholder_left">— sisa</string>
     <string name="placeholder_limit">batas: —</string>
@@ -107,6 +109,8 @@
     <string name="card_data_off">Belum ada batas data</string>
     <string name="card_battery_fmt">%1$d%% · %2$s</string>
     <string name="battery_charging_short">mengisi</string>
+    <string name="battery_history">BATERAI · 24 JAM TERAKHIR</string>
+    <string name="battery_chart_hint">Riwayat terbentuk saat pemantauan berjalan (contoh sekitar tiap menit).</string>
     <string name="battery_no_estimate">tanpa perkiraan</string>
     <string name="card_vault_fmt">%1$d tersimpan</string>
     <string name="card_vault_off">Lembaran mati</string>

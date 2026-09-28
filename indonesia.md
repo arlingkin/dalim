@@ -1,7 +1,7 @@
 # 🌟 Data Limit (dalim) — Bahasa Indonesia 🇮🇩
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Rilis](https://img.shields.io/badge/rilis-v0.4.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.4.0)
+[![Rilis](https://img.shields.io/badge/rilis-v0.4.25-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.4.25)
 
 > 🔎 Butuh versi **English**? Lihat → [README.md](README.md)
 
@@ -36,10 +36,10 @@ rilis** 🔐. Dapat dipasang di **Android 8.0+** (API 26).
 
 | Versi | Tipe | Download |
 |-------|------|----------|
-| `v0.4.0` | Produksi · Ditandatangani | [datalimit-0.4.0-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.4.0/datalimit-0.4.0-signed.apk) |
+| `v0.4.25` | Produksi · Ditandatangani | [datalimit-0.4.25-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.4.25/datalimit-0.4.25-signed.apk) |
 
-- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.4.0](https://github.com/arlingkin/dalim/releases/tag/v0.4.0)
-- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.4.0/SHA256SUMS.txt)
+- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.4.25](https://github.com/arlingkin/dalim/releases/tag/v0.4.25)
+- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.4.25/SHA256SUMS.txt)
 
 Versi uji sebelumnya (`v0.2.x-pre`, tanpa tanda tangan / debug-signed) masih
 tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
@@ -54,7 +54,9 @@ tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
 | Gaya periode | Tetap (reset tengah malam) / Bergulir 24 jam |
 | Dasbor | Kartu langsung: Data (gauge, RX & TX, waktu cek) · Baterai · Kubah · Kontrol aplikasi · Pengaturan |
 | Gerbang data | Overlay pemblokiran layar penuh di atas aplikasi apa pun + peringatan layar penuh yang muncul lagi, pintu darurat "+100 MB" |
-| Panel baterai | Tegangan / suhu / laju pengurasan, perkiraan waktu habis, peringatan pengisian, penghentian saat baterai nyaris habis |
+| Panel baterai | Tegangan / suhu / laju pengurasan, perkiraan waktu habis, peringatan pengisian, penghentian saat baterai nyaris habis, grafik riwayat 24 jam |
+| Kubah notifikasi | Riwayat peringatan berbasis SQLite dengan retensi 3 / 7 / 30 hari, bisa dicari |
+| Grafik jaringan | Batang pemakaian per aplikasi untuk periode berjalan di layar DATA |
 | Kubah notifikasi | Riwayat peringatan berbasis SQLite dengan retensi 3 / 7 / 30 hari, bisa dicari |
 | Firewall | Blokir per aplikasi + anggaran per aplikasi lewat **VPN** lokal (Android 8+, tanpa root), izin sementara hingga waktu tertentu |
 | Autostart | Pemantauan dilanjutkan otomatis setelah perangkat reboot |

@@ -7,6 +7,7 @@ import android.os.BatteryManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -14,6 +15,7 @@ import com.dalim.datalimit.R
 import com.dalim.datalimit.core.BatterySnapshot
 import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.UsagePrefs
+import com.dalim.datalimit.data.BatteryHistoryStore
 import com.dalim.datalimit.monitor.BatteryMonitor
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.slider.Slider
@@ -32,6 +34,10 @@ class BatteryActivity : AppCompatActivity() {
     private lateinit var startLabel: TextView
     private lateinit var floorSlider: Slider
     private lateinit var startSlider: Slider
+    private lateinit var batteryChart: BatteryLevelChartView
+    private lateinit var batteryChartHint: TextView
+
+    private val history = BatteryHistoryStore(applicationContext)
 
     private val batteryFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
     private val handler = Handler(Looper.getMainLooper())
@@ -67,6 +73,8 @@ class BatteryActivity : AppCompatActivity() {
         startLabel = findViewById(R.id.startLabel)
         floorSlider = findViewById(R.id.floorSlider)
         startSlider = findViewById(R.id.startSlider)
+        batteryChart = findViewById(R.id.batteryChart)
+        batteryChartHint = findViewById(R.id.batteryChartHint)
 
         floorSlider.valueFrom = 0f
         floorSlider.valueTo = 90f
@@ -171,6 +179,18 @@ class BatteryActivity : AppCompatActivity() {
             voltageMv = read.voltageMv
         )
         renderSnapshot(snapshot)
+        recordAndRefreshChart(read.level)
+    }
+
+    private fun recordAndRefreshChart(level: Int) {
+        history.append(System.currentTimeMillis(), level)
+        Thread {
+            val series = history.series(24, System.currentTimeMillis())
+            runOnUiThread {
+                batteryChart.setSeries(series)
+                batteryChartHint.visibility = if (series.size < 2) View.VISIBLE else View.GONE
+            }
+        }.apply { isDaemon = true }.start()
     }
 
     private fun renderSnapshot(snapshot: BatterySnapshot) {

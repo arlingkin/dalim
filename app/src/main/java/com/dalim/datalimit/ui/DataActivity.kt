@@ -10,24 +10,35 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.dalim.datalimit.R
 import com.dalim.datalimit.core.LocaleHelper
+import com.dalim.datalimit.core.PackageTotal
 import com.dalim.datalimit.core.Period
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.WindowStyle
 import com.dalim.datalimit.core.util.ByteFormat
+import com.dalim.datalimit.data.NetworkStatsReader
 import com.dalim.datalimit.monitor.GateOverlayService
 import com.dalim.datalimit.monitor.TrafficMonitorService
 import com.dalim.datalimit.monitor.UsageMatcher
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.snackbar.Snackbar
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 
 class DataActivity : AppCompatActivity() {
 
@@ -45,11 +56,19 @@ class DataActivity : AppCompatActivity() {
     private lateinit var statusText: TextView
     private lateinit var lastCheckText: TextView
     private lateinit var limitInput: EditText
+    private lateinit var appChartList: LinearLayout
+    private lateinit var appChartEmpty: TextView
+
+    private val reader = NetworkStatsReader(applicationContext)
+    private var lastChartAtMillis = 0L
 
     private val handler = Handler(Looper.getMainLooper())
     private val refreshTick = object : Runnable {
         override fun run() {
             render()
+            if (System.currentTimeMillis() - lastChartAtMillis >= 30_000L) {
+                refreshAppChart()
+            }
             handler.postDelayed(this, 5_000L)
         }
     }
@@ -86,6 +105,8 @@ class DataActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
         lastCheckText = findViewById(R.id.lastCheckText)
         limitInput = findViewById(R.id.limitInput)
+        appChartList = findViewById(R.id.appChartList)
+        appChartEmpty = findViewById(R.id.appChartEmpty)
 
         loadSettingsIntoUi()
         wireListeners()
@@ -99,6 +120,7 @@ class DataActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         render()
+        refreshAppChart()
         handler.postDelayed(refreshTick, 5_000L)
     }
 
@@ -274,6 +296,90 @@ class DataActivity : AppCompatActivity() {
         ) else getString(R.string.last_check_empty)
     }
 
+    private fun refreshAppChart() {
+        lastChartAtMillis = System.currentTimeMillis()
+        val start = periodStartMillis(lastChartAtMillis)
+        Thread {
+            val data = reader.fetchAll(start, lastChartAtMillis)
+                .sortedByDescending { it.totalBytes }
+                .take(MAX_APP_ROWS)
+            runOnUiThread { renderAppChart(data) }
+        }.apply { isDaemon = true }.start()
+    }
+
+    private fun periodStartMillis(now: Long): Long {
+        val zone = ZoneId.systemDefault()
+        return when (prefs.period) {
+            Period.WEEKLY -> LocalDate.now()
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .atStartOfDay(zone).toInstant().toEpochMilli()
+            Period.MONTHLY -> LocalDate.now()
+                .withDayOfMonth(1).atStartOfDay(zone).toInstant().toEpochMilli()
+            Period.DAILY ->
+                if (prefs.windowStyle == WindowStyle.FIXED) {
+                    LocalDate.now().atStartOfDay(zone).toInstant().toEpochMilli()
+                } else {
+                    val anchor = prefs.rollingAnchorMillis
+                    if (anchor > 0L) anchor else now - 86_400_000L
+                }
+        }
+    }
+
+    private fun renderAppChart(data: List<PackageTotal>) {
+        appChartList.removeAllViews()
+        if (data.isEmpty()) {
+            appChartEmpty.visibility = View.VISIBLE
+            return
+        }
+        appChartEmpty.visibility = View.GONE
+        val density = resources.displayMetrics.density
+        val trackWidth = (96f * density).toInt()
+        val max = data.first().totalBytes.coerceAtLeast(1L)
+
+        for (item in data) {
+            val row = LinearLayout(this)
+            row.orientation = LinearLayout.HORIZONTAL
+            row.gravity = android.view.Gravity.CENTER_VERTICAL
+            row.setPadding(0, (5f * density).toInt(), 0, (5f * density).toInt())
+
+            val label = TextView(this)
+            label.text = reader.appLabel(item.packageName)
+            label.setTextColor(0xFF202124.toInt())
+            label.textSize = 13f
+            label.maxLines = 1
+            label.ellipsize = TextUtils.TruncateAt.END
+            row.addView(label, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+
+            val value = TextView(this)
+            value.text = ByteFormat.format(item.totalBytes)
+            value.setTextColor(0xFF0D47A1.toInt())
+            value.textSize = 12f
+            row.addView(value, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginStart = (10f * density).toInt() })
+
+            val track = FrameLayout(this)
+            track.background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 3f * density
+                setColor(0xFFE8EAED.toInt())
+            }
+            val percent = (item.totalBytes.toFloat() / max)
+            val inner = View(this)
+            inner.setBackgroundColor(resources.getColor(R.color.accent))
+            track.addView(inner, FrameLayout.LayoutParams(
+                (trackWidth * percent).coerceAtLeast(1f).toInt(),
+                (8f * density).toInt()
+            ))
+            row.addView(track, LinearLayout.LayoutParams(
+                trackWidth, (10f * density).toInt()
+            ).apply { marginStart = (10f * density).toInt() })
+
+            appChartList.addView(row)
+        }
+    }
+
     private fun ensureNotificationPermission() {
         if (Build.VERSION.SDK_INT >= 33) {
             notifPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
@@ -309,6 +415,9 @@ class DataActivity : AppCompatActivity() {
                 )
             }.show()
         }
+    }
+companion object {
+        private const val MAX_APP_ROWS = 6
     }
 }
 
