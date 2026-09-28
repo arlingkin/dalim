@@ -40,7 +40,7 @@ object Schedule {
 
     /** Current day-of-week for `now` in the device-local zone. */
     fun dayOfWeek(nowMillis: Long, zone: ZoneId = ZoneId.systemDefault()): DayOfWeek =
-        LocalDate.ofInstant(java.time.Instant.ofEpochMilli(nowMillis), zone).dayOfWeek
+        java.time.Instant.ofEpochMilli(nowMillis).atZone(zone).toLocalDate().dayOfWeek
 
     private fun isWeekend(day: DayOfWeek): Boolean =
         day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY
