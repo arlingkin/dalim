@@ -122,6 +122,11 @@
     <string name="battery_floor_label">Peringatan pada %1$d%%</string>
     <string name="battery_start_label">Anggaran mulai pada %1$d%%</string>
     <string name="battery_alerts">Peringatan baterai</string>
+    <string name="battery_floor_gate_switch">Hentikan data saat baterai rendah</string>
+    <string name="battery_floor_gate_hint">Selama pengisian turun di bawah ambang, gerbang data memblokir pemakaian sampai Anda mengisi daya.</string>
+    <string name="battery_gate_title">GERBANG BATERAI</string>
+    <string name="battery_gate_info_fmt">%1$d%% tersisa · ambang %2$d%%</string>
+    <string name="battery_gate_snooze">Saya akan cas — tunda gerbang</string>
     <string name="battery_status_charging">Mengisi daya</string>
     <string name="battery_status_discharging">Menguras daya</string>
     <string name="battery_status_full">Penuh</string>

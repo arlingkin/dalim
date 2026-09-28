@@ -40,7 +40,7 @@ class BatteryMonitor(private val prefs: UsagePrefs) {
             status == BatteryManager.BATTERY_STATUS_NOT_CHARGING
 
         var drain = Double.NaN
-        var persistSample = prev == null || !discharging
+        var persistSample = prev == null
         if (prev != null) {
             val minutes = (now - prev.realtimeMillis) / 60_000.0
             val delta = prev.levelPercent - levelClamped
@@ -51,7 +51,15 @@ class BatteryMonitor(private val prefs: UsagePrefs) {
                 }
                 // Same level across the whole window: no new information, keep
                 // the existing anchor so a later drop still closes the interval.
+            } else if (!discharging) {
+                // Charging anchor: refresh only when the anchor is stale or the
+                // level moved, so high-frequency battery intents do not rewrite
+                // prefs every time.
+                persistSample = now - prev.realtimeMillis >= ANCHOR_MIN_MILLIS ||
+                    prev.levelPercent != levelClamped
             }
+        } else {
+            persistSample = true
         }
         // Keep the fresh "no estimate" / charge-cycle anchor from resetting the
         // window every sticky read (dashboard poll + battery-changed intents all
@@ -96,6 +104,7 @@ class BatteryMonitor(private val prefs: UsagePrefs) {
 
     companion object {
         private const val MIN_SAMPLE_MINUTES = 5L
+        private const val ANCHOR_MIN_MILLIS = 60_000L
 
         fun readFromIntent(intent: android.content.Intent): BatteryIntent {
             val rawLevel = intent.getIntExtra(android.os.BatteryManager.EXTRA_LEVEL, -1)

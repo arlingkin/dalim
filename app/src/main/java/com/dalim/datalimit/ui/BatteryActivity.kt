@@ -79,6 +79,11 @@ class BatteryActivity : AppCompatActivity() {
         wireBudgetListeners()
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchBatteryAlerts)
             .setOnCheckedChangeListener { _, checked -> prefs.batteryAlertsEnabled = checked }
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchFloorGate)
+            .setOnCheckedChangeListener { _, checked ->
+                prefs.batteryFloorGateEnabled = checked
+                if (!checked) prefs.batteryFloorGateSnoozed = false
+            }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -106,6 +111,8 @@ class BatteryActivity : AppCompatActivity() {
     private fun loadBudget() {
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchBatteryAlerts)
             .isChecked = prefs.batteryAlertsEnabled
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchFloorGate)
+            .isChecked = prefs.batteryFloorGateEnabled && !prefs.batteryFloorGateSnoozed
         floorSlider.value = prefs.batteryBudgetFloor.toFloat().coerceIn(floorSlider.valueFrom, floorSlider.valueTo)
         val start = prefs.batteryBudgetStart.toFloat()
         startSlider.value = start.coerceIn(startSlider.valueFrom, startSlider.valueTo)

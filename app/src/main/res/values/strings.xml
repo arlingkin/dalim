@@ -122,6 +122,11 @@
     <string name="battery_floor_label">Alert at %1$d%%</string>
     <string name="battery_start_label">Budget starts at %1$d%%</string>
     <string name="battery_alerts">Battery alerts</string>
+    <string name="battery_floor_gate_switch">Halt data at battery floor</string>
+    <string name="battery_floor_gate_hint">While discharging below the floor, the data gate blocks usage until you charge.</string>
+    <string name="battery_gate_title">BATTERY GATE</string>
+    <string name="battery_gate_info_fmt">%1$d%% left · floor %2$d%%</string>
+    <string name="battery_gate_snooze">I\'ll charge — snooze the gate</string>
     <string name="battery_status_charging">Charging</string>
     <string name="battery_status_discharging">Discharging</string>
     <string name="battery_status_full">Full</string>

@@ -131,6 +131,16 @@ class UsagePrefs(context: Context) {
         get() = sp.getBoolean(KEY_BAT_ALERT_SENT, false)
         set(v) = sp.edit().putBoolean(KEY_BAT_ALERT_SENT, v).apply()
 
+    /** Halt data (gate) while discharging below the battery floor. */
+    var batteryFloorGateEnabled: Boolean
+        get() = sp.getBoolean(KEY_BAT_GATE, true)
+        set(v) = sp.edit().putBoolean(KEY_BAT_GATE, v).apply()
+
+    /** Snoozed by the user until the next charge; cleared once plugged in. */
+    var batteryFloorGateSnoozed: Boolean
+        get() = sp.getBoolean(KEY_BAT_GATE_SNOOZE, false)
+        set(v) = sp.edit().putBoolean(KEY_BAT_GATE_SNOOZE, v).apply()
+
     var batterySampleRealtime: Long
         get() = sp.getLong(KEY_BAT_SAMPLE_TS, 0L)
         set(v) = sp.edit().putLong(KEY_BAT_SAMPLE_TS, v).apply()
@@ -221,6 +231,8 @@ class UsagePrefs(context: Context) {
         private const val KEY_BAT_START = "battery_start"
         private const val KEY_BAT_ALERTS = "battery_alerts"
         private const val KEY_BAT_ALERT_SENT = "battery_alert_sent"
+        private const val KEY_BAT_GATE = "battery_floor_gate"
+        private const val KEY_BAT_GATE_SNOOZE = "battery_floor_gate_snooze"
         private const val KEY_BAT_SAMPLE_TS = "battery_sample_ts"
         private const val KEY_BAT_SAMPLE_LEVEL = "battery_sample_level"
 
