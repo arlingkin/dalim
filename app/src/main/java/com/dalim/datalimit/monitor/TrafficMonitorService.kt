@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.dalim.datalimit.R
 import com.dalim.datalimit.core.BatterySnapshot
@@ -28,13 +29,23 @@ class TrafficMonitorService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private val tick = object : Runnable {
         override fun run() {
-            checkAndEnforce()
-            handler.postDelayed(this, pollInterval)
+            try {
+                checkAndEnforce()
+                consecutiveFailures = 0
+            } catch (t: Throwable) {
+                // A failure in any tick path must never kill the process: the
+                // START_STICKY restart would re-crash in a loop. Log and slow
+                // down so the device stays usable while the issue persists.
+                consecutiveFailures++
+                Log.e(TAG, "monitor poll tick failed (${consecutiveFailures}x)", t)
+            }
+            handler.postDelayed(this, if (consecutiveFailures > 0) BASE_POLL_MS else pollInterval)
         }
     }
 
     private var stalled = false
     private var pollInterval = BASE_POLL_MS
+    private var consecutiveFailures = 0
     private val nm: NotificationManager by lazy {
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
@@ -267,6 +278,8 @@ class TrafficMonitorService : Service() {
     }
 
     companion object {
+        private const val TAG = "DataLimitMonitor"
+
         private const val BASE_POLL_MS = 60_000L
         private const val FAST_POLL_MS = 10_000L
         private const val DAY_MS = 86_400_000L
