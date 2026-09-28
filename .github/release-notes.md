@@ -1,13 +1,26 @@
-## Data Limit v0.5.0 — Scheduling, export/import, history & animated UI
+## Data Limit v0.5.1 — Crash-loop fix (stability)
 
-"Planning & Insights": on top of the **DALIM Core (v0.4.0)** engine, this
-release makes data gates follow a schedule you set, lets you move your config
-between devices, adds usage-history graphs, and polishes the whole UI with
-light-native animations. Still **zero new dependencies**.
+**Stability fix release.** v0.5.0 could restart itself in an infinite loop on
+some devices: the background monitor's poll tick ran on the main thread with no
+exception guard, so a single per-tick failure crashed the whole app and the
+`START_STICKY` service immediately re-crashed — looking like the app "kept
+closing by itself". This release makes every polling/render path crash-proof.
 
 Check `SHA256SUMS.txt` to verify the file.
 
-### What's new in v0.5.0
+### What's new in v0.5.1
+- **No more crash-loop.** The monitor poll tick is now guarded end-to-end: a
+  failure in any tick path (usage-history writes, schedule/battery reads,
+  notifications) is caught, logged (`DataLimitMonitor` tag), and the loop
+  continues at a safe slow pace instead of killing the app. The foreground
+  service can no longer take the whole app down by crashing repeatedly.
+- **Dashboard & DATA screen hardened the same way.** The battery render on the
+  dashboard and the DATA screen's 5-second refresh tick now survive individual
+  render errors (the refresh loop already recovered from data/vault failures).
+- All v0.5.0 features unchanged: schedule data-gate, config export/import,
+  usage-history graphs, animated UI (with Reduce-motion option).
+
+### What's new in v0.5.0 (for reference)
 - **Schedule window (auto data gate).** Choose when data may be used:
   **Off · Weekdays · Weekend · Every day · Custom** time range (overnight
   ranges work too, e.g. 22:00–06:00). Outside the window, usage is halted by

@@ -1,9 +1,21 @@
-# PLAN-NEXT — release planning after v0.5.0
+# PLAN-NEXT — release planning after v0.5.1
 
 > Working notes for the next release. Same rules that shipped v0.5.0: feature
 > branch → CI (test + lint + assembleRelease) → fixes → merge to **main** →
 > release. No new dependencies; all state in `UsagePrefs` / SQLite; every
 > screen/feature bilingual (EN / ID).
+
+## ✅ v0.5.1 — shipped (stability fix)
+- versionCode **10** · versionName **0.5.1** · workflow `APP_VERSION: 0.5.1`.
+- **Fix — crash-loop:** the monitor poll tick (`TrafficMonitorService`) and the
+  dashboard battery render / DATA refresh tick could take the whole process
+  down on a per-tick failure; `START_STICKY` then restarted the service and
+  re-crashed in an infinite loop ("app closes by itself"). All tick paths are
+  now try/catch-guarded; monitor logs failures under the `DataLimitMonitor`
+  tag and falls back to the slow poll rate instead of crashing.
+- Docs rolled: README.md + indonesia.md + .github/release-notes.md updated;
+  public roadmap keeps only the root-radio module item.
+- Verified on-device by the user before any further release work.
 
 ## ✅ v0.5.0 — shipped ("Planning & Insights")
 - versionCode **9** · versionName **0.5.0** · workflow `APP_VERSION: 0.5.0`.
@@ -26,8 +38,8 @@
   public roadmap keeps only the root-radio module item.
 
 ## 0. Release shape (next)
-- Name: **v0.6.0** (versionCode **10**, versionName "0.6.0"; bump workflow
-  `APP_VERSION`) — versionCode is already 9 on v0.5.0.
+- Name: **v0.6.0** (versionCode **11**, versionName "0.6.0"; bump workflow
+  `APP_VERSION`) — versionCode is already 10 on v0.5.1.
 - Framework decision unchanged: **not Flutter** — native-only platform APIs
   (NetworkStatsManager, VpnService, SYSTEM_ALERT_WINDOW, NotificationListener,
   foreground services + appops) can't be replaced by a Flutter UI, which would
@@ -55,3 +67,5 @@
 - Root paths are device-specific — keep the module optional and self-testing.
 - Don't regress the v0.5.0 schedule / history / export / animation surface.
 - Reduce-motion correctness: animations must never delay first paint.
+- Confirm the v0.5.1 crash-loop fix on the reporter's device; any residual
+  failure now surfaces as `Log.e("DataLimitMonitor", ...)` instead of a crash.
