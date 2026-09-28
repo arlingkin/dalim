@@ -6,6 +6,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.dalim.datalimit.core.BatterySnapshot
@@ -28,14 +29,32 @@ class MainActivity : AppCompatActivity() {
     private lateinit var matcher: UsageMatcher
 
     private val handler = Handler(Looper.getMainLooper())
-    private val batteryReceiver = BatteryReceiver()
     private val batteryFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+
+    @Volatile
+    private var lastBatterySnapshot: BatterySnapshot? = null
+    @Volatile
+    private var lastBatteryAtMillis = 0L
+
+    private val batteryReceiver = BatteryReceiver().apply {
+        onSnapshot = { snap ->
+            lastBatterySnapshot = snap
+            lastBatteryAtMillis = SystemClock.elapsedRealtime()
+            renderBattery(snap)
+        }
+    }
 
     private val refreshTick = object : Runnable {
         override fun run() {
-            renderData()
+            try {
+                renderData()
+            } catch (_: Throwable) {
+            }
+            try {
+                renderVault()
+            } catch (_: Throwable) {
+            }
             renderBattery()
-            renderVault()
             handler.postDelayed(this, 5_000L)
         }
     }
@@ -86,8 +105,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Kick the ticker immediately on first appearance (self-rescheduling);
+        // do not post a second copy here.
         refreshTick.run()
-        handler.postDelayed(refreshTick, 5_000L)
     }
 
     override fun onPause() {
@@ -135,7 +155,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderBattery() {
-        val snapshot = batterySnapshot()
+        // The receiver delivers near-real-time snapshots; reuse the freshest one
+        // instead of re-reading the sticky intent on every tick.
+        val fresh = SystemClock.elapsedRealtime() - lastBatteryAtMillis < 30_000L
+        renderBattery(if (fresh) lastBatterySnapshot else batterySnapshot())
+    }
+
+    private fun renderBattery(snapshot: BatterySnapshot?) {
         val text = findViewById<android.widget.TextView>(R.id.cardBatteryText)
         val sub = findViewById<android.widget.TextView>(R.id.cardBatterySub)
         if (snapshot == null) {
@@ -161,13 +187,16 @@ class MainActivity : AppCompatActivity() {
         ) ?: return null
         val read = BatteryMonitor.readFromIntent(sticky)
         if (read.level < 0) return null
-        return BatteryMonitor(prefs).update(
+        val snap = BatteryMonitor(prefs).update(
             level = read.level,
             status = read.status,
             plugged = read.plugged,
             temperatureTenthsC = read.temperatureTenthsC,
             voltageMv = read.voltageMv
         )
+        lastBatterySnapshot = snap
+        lastBatteryAtMillis = SystemClock.elapsedRealtime()
+        return snap
     }
 
     private fun renderVault() {

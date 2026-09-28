@@ -40,22 +40,24 @@ class BatteryMonitor(private val prefs: UsagePrefs) {
             status == BatteryManager.BATTERY_STATUS_NOT_CHARGING
 
         var drain = Double.NaN
+        var persistSample = prev == null || !discharging
         if (prev != null) {
-            val delta = prev.levelPercent - levelClamped
             val minutes = (now - prev.realtimeMillis) / 60_000.0
-            if (discharging && minutes >= MIN_SAMPLE_MINUTES && delta > 0) {
-                drain = TimeFormat.drainPerHour(delta, minutes.roundToLong())
-            }
-            if (!discharging) {
-                // Clear the stale drain sample; estimates are only valid while
-                // discharging.
-                drain = Double.NaN
+            val delta = prev.levelPercent - levelClamped
+            if (discharging && minutes >= MIN_SAMPLE_MINUTES) {
+                if (delta > 0) {
+                    drain = TimeFormat.drainPerHour(delta, minutes.roundToLong())
+                    persistSample = true
+                }
+                // Same level across the whole window: no new information, keep
+                // the existing anchor so a later drop still closes the interval.
             }
         }
-        if (discharging && prev?.realtimeMillis != now) {
-            prefs.batterySampleRealtime = now
-            prefs.batterySampleLevel = levelClamped
-        } else if (!discharging) {
+        // Keep the fresh "no estimate" / charge-cycle anchor from resetting the
+        // window every sticky read (dashboard poll + battery-changed intents all
+        // call update()); otherwise the >=5 min interval is never reached and the
+        // drain never computes.
+        if (persistSample) {
             prefs.batterySampleRealtime = now
             prefs.batterySampleLevel = levelClamped
         }
