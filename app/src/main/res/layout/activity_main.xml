@@ -118,6 +118,25 @@
                         android:text="@string/card_data_off"
                         android:textSize="12sp"
                         android:textColor="#5F6368" />
+
+                    <TextView
+                        android:id="@+id/scheduleStatusText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:visibility="gone"
+                        android:textSize="11sp"
+                        android:textColor="#9AA0A6" />
+
+                    <TextView
+                        android:id="@+id/historyLinkText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/history_title"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

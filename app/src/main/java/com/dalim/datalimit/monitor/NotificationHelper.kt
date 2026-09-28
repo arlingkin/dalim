@@ -20,6 +20,7 @@ object NotificationHelper {
     const val NOTIF_ALERT = 1002
     const val NOTIF_GATE = 1003
     const val NOTIF_BATTERY = 1004
+    const val NOTIF_SCHEDULE = 1005
 
     fun createChannels(context: Context) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -118,6 +119,22 @@ object NotificationHelper {
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(R.string.notif_battery_floor))
             .setContentText(context.getString(R.string.notif_battery_body, floorPercent, levelPercent))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setOnlyAlertOnce(true)
+            .setContentIntent(open)
+            .build()
+    }
+
+    fun scheduleAlertNotification(context: Context): Notification {
+        val open = PendingIntent.getActivity(
+            context, 5,
+            Intent(context, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        return NotificationCompat.Builder(context, CHANNEL_BATTERY)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getString(R.string.schedule_gate_title))
+            .setContentText(context.getString(R.string.schedule_gate_info_fmt))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setOnlyAlertOnce(true)
             .setContentIntent(open)

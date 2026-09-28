@@ -381,6 +381,130 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ===== Schedule ===== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/schedule_section"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#9AA0A6"
+                        android:letterSpacing="0.1" />
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/scheduleGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        app:singleSelection="true"
+                        app:selectionRequired="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnScheduleOff"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/schedule_off"
+                            android:textSize="11sp"
+                            android:minHeight="40dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnScheduleWeekdays"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/schedule_weekdays"
+                            android:textSize="11sp"
+                            android:minHeight="40dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnScheduleWeekend"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/schedule_weekend"
+                            android:textSize="11sp"
+                            android:minHeight="40dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnScheduleEveryday"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/schedule_everyday"
+                            android:textSize="11sp"
+                            android:minHeight="40dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnScheduleCustom"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/schedule_custom"
+                            android:textSize="11sp"
+                            android:minHeight="40dp" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <LinearLayout
+                        android:id="@+id/scheduleCustomRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnScheduleStart"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/schedule_custom_start"
+                            android:textColor="@color/primary"
+                            android:minHeight="40dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnScheduleEnd"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:text="@string/schedule_custom_end"
+                            android:textColor="@color/primary"
+                            android:minHeight="40dp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/scheduleHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/schedule_hint"
+                        android:textSize="12sp"
+                        android:textColor="#5F6368" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- ===== App control ===== -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -417,10 +541,20 @@
                     android:padding="16dp">
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnHistory"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/history_title"
+                        android:textColor="@color/primary"
+                        app:icon="@android:drawable/ic_menu_manage" />
+
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPermissions"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="@string/grant_permissions"
                         android:textColor="@color/primary"
                         app:icon="@android:drawable/ic_lock_lock" />

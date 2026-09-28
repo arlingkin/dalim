@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.dalim.datalimit.R
 import com.dalim.datalimit.core.LocaleHelper
+import com.dalim.datalimit.core.Schedule
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.UsageReport
 
@@ -35,21 +36,23 @@ class GateOverlayService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val report = matcher.compute(System.currentTimeMillis())
-        val batteryMode = intent?.getStringExtra(EXTRA_REASON) == REASON_BATTERY
+        val reason = intent?.getStringExtra(EXTRA_REASON)
+        val batteryMode = reason == REASON_BATTERY
+        val scheduleMode = reason == REASON_SCHEDULE
 
         NotificationHelper.createChannels(this)
         startForeground(
             NotificationHelper.NOTIF_GATE,
             NotificationHelper.gateNotification(this, getString(R.string.monitoring_bg))
         )
-        showOverlay(report, batteryMode)
+        showOverlay(report, batteryMode, scheduleMode)
         return START_NOT_STICKY
     }
 
-    private fun showOverlay(report: UsageReport, batteryMode: Boolean) {
+    private fun showOverlay(report: UsageReport, batteryMode: Boolean, scheduleMode: Boolean) {
         if (overlayView != null) return
         val added = View.inflate(this, R.layout.gate_overlay, null)
-        bind(added, report, batteryMode)
+        bind(added, report, batteryMode, scheduleMode)
         // Full-screen, on-top-of-everything overlay: it blocks touch interaction
         // with whatever app the user has open until they pick an action.
         val lp = WindowManager.LayoutParams(
@@ -72,7 +75,7 @@ class GateOverlayService : Service() {
         }
     }
 
-    private fun bind(view: View, report: UsageReport, batteryMode: Boolean) {
+    private fun bind(view: View, report: UsageReport, batteryMode: Boolean, scheduleMode: Boolean) {
         val heading = view.findViewById<TextView>(R.id.gateTitle)
         val big = view.findViewById<TextView>(R.id.gateLimitText)
         val allow = view.findViewById<View>(R.id.btnAllow)
@@ -95,6 +98,21 @@ class GateOverlayService : Service() {
             return
         }
 
+        if (scheduleMode) {
+            heading.setText(R.string.schedule_gate_title)
+            big.text = "--"
+            view.findViewById<TextView>(R.id.gateInfo).text =
+                getString(R.string.schedule_gate_info_fmt)
+            allow.visibility = View.GONE
+            reset.visibility = View.GONE
+            dismiss.text = getString(R.string.schedule_gate_snooze)
+            dismiss.setOnClickListener {
+                prefs.scheduleSnoozeUntilMillis = nextScheduleOpenMillis()
+                dismiss()
+            }
+            return
+        }
+
         view.findViewById<TextView>(R.id.gateInfo).text = getString(
             R.string.gate_stats_fmt,
             TrafficReader.formatBytes(report.consumedBytes),
@@ -112,6 +130,16 @@ class GateOverlayService : Service() {
             TrafficMonitorService.stop(this)
             dismiss()
         }
+    }
+
+    /** Epoch millis of the next minute where the schedule window opens again. */
+    private fun nextScheduleOpenMillis(): Long {
+        val now = System.currentTimeMillis()
+        val nowMin = Schedule.minutesOfDay(now)
+        val next = Schedule.nextAllowedMinute(nowMin, prefs.scheduleStartMin, prefs.scheduleEndMin)
+        if (next == nowMin) return now
+        val days = if (next < nowMin) 1 else 0
+        return now + (days * Schedule.MINUTES_PER_DAY + next - nowMin) * 60_000L
     }
 
     private fun batteryLevels(): Pair<Int, Int> {
@@ -148,11 +176,15 @@ class GateOverlayService : Service() {
         private const val EXTRA_REASON = "reason"
         const val REASON_DATA = "data"
         const val REASON_BATTERY = "battery"
+        const val REASON_SCHEDULE = "schedule"
 
-        fun ensureRunning(context: Context, battery: Boolean = false) {
+        fun ensureRunning(context: Context, battery: Boolean = false, schedule: Boolean = false) {
             try {
                 val i = Intent(context, GateOverlayService::class.java)
-                if (battery) i.putExtra(EXTRA_REASON, REASON_BATTERY)
+                when {
+                    battery -> i.putExtra(EXTRA_REASON, REASON_BATTERY)
+                    schedule -> i.putExtra(EXTRA_REASON, REASON_SCHEDULE)
+                }
                 context.startForegroundService(i)
             } catch (_: Exception) {
                 // overlay permission missing / FGS restrictions; the activity

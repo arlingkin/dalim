@@ -192,4 +192,29 @@
     <string name="granted">Diberi</string>
     <string name="reset_vault">Bersihkan lembaran notifikasi</string>
     <string name="firewall_off">Firewall mati</string>
+
+    <string name="history_title">Riwayat pemakaian</string>
+    <string name="history_subtitle">Harian · mingguan · bulanan</string>
+    <string name="history_totals_empty">belum ada data</string>
+    <string name="history_totals_fmt">▼ %1$s  ▲ %2$s</string>
+    <string name="history_empty">Belum ada riwayat pemakaian. Total tersusun saat pemantauan berjalan.</string>
+    <string name="history_hint">Satu baris per hari, disimpan 13 bulan.</string>
+    <string name="history_scope_hint">Batang menampilkan 12 periode terakhir.</string>
+
+    <string name="schedule_section">JADWAL</string>
+    <string name="schedule_off">Mati</string>
+    <string name="schedule_weekdays">Hari kerja</string>
+    <string name="schedule_weekend">Akhir pekan</string>
+    <string name="schedule_everyday">Setiap hari</string>
+    <string name="schedule_custom">Kustom</string>
+    <string name="schedule_hint">Di luar jendela aktif, data di-gerbang pada hari terpilih.</string>
+    <string name="schedule_custom_start">Mulai %1$s</string>
+    <string name="schedule_custom_end">Selesai %1$s</string>
+    <string name="schedule_preview_fmt">%1$s · %2$s–%3$s</string>
+    <string name="schedule_status_fmt">Jadwal: %1$s · %2$s–%3$s</string>
+    <string name="schedule_resumes_fmt">dilanjutkan %1$s</string>
+
+    <string name="schedule_gate_title">GERBANG JADWAL</string>
+    <string name="schedule_gate_info_fmt">Data di-gerbang selama berada di luar jendela jadwal.</string>
+    <string name="schedule_gate_snooze">Tunda hingga jendela terbuka</string>
 </resources>

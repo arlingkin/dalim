@@ -3,6 +3,7 @@ package com.dalim.datalimit.ui
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
+import android.app.TimePickerDialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.dalim.datalimit.R
 import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.PackageTotal
 import com.dalim.datalimit.core.Period
+import com.dalim.datalimit.core.Schedule
 import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.WindowStyle
 import com.dalim.datalimit.core.util.ByteFormat
@@ -153,6 +155,8 @@ class DataActivity : AppCompatActivity() {
         )
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchGate).isChecked = s.gateEnabled
         findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchNotify).isChecked = s.notificationsEnabled
+
+        loadScheduleIntoUi()
     }
 
     private fun wireListeners() {
@@ -186,6 +190,12 @@ class DataActivity : AppCompatActivity() {
         findViewById<android.view.View>(R.id.btnAppControl).setOnClickListener {
             startActivity(Intent(this, AppControlActivity::class.java))
         }
+
+        findViewById<android.view.View>(R.id.btnHistory).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+
+        wireSchedule()
 
         findViewById<android.view.View>(R.id.btnPermissions).setOnClickListener {
             requestPermissionsIfNeeded()
@@ -221,6 +231,78 @@ class DataActivity : AppCompatActivity() {
             render()
             Snackbar.make(findViewById(R.id.toolbar), getString(R.string.snack_reset), Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    private fun loadScheduleIntoUi() {
+        val style = prefs.scheduleWindowStyle
+        findViewById<MaterialButtonToggleGroup>(R.id.scheduleGroup).check(
+            when (style) {
+                Schedule.WindowStyle.WEEKDAYS -> R.id.btnScheduleWeekdays
+                Schedule.WindowStyle.WEEKEND -> R.id.btnScheduleWeekend
+                Schedule.WindowStyle.EVERYDAY -> R.id.btnScheduleEveryday
+                Schedule.WindowStyle.CUSTOM -> R.id.btnScheduleCustom
+                else -> R.id.btnScheduleOff
+            }
+        )
+        renderSchedule()
+    }
+
+    private fun wireSchedule() {
+        findViewById<MaterialButtonToggleGroup>(R.id.scheduleGroup).addOnButtonCheckedListener { _, _, isChecked ->
+            if (isChecked) {
+                prefs.scheduleWindowStyle = currentScheduleStyle()
+                prefs.scheduleSnoozeUntilMillis = 0L
+                renderSchedule()
+            }
+        }
+        findViewById<android.view.View>(R.id.btnScheduleStart).setOnClickListener {
+            showTimePicker(persistStart = true)
+        }
+        findViewById<android.view.View>(R.id.btnScheduleEnd).setOnClickListener {
+            showTimePicker(persistStart = false)
+        }
+    }
+
+    private fun currentScheduleStyle(): Schedule.WindowStyle = when (
+        findViewById<MaterialButtonToggleGroup>(R.id.scheduleGroup).checkedButtonId
+    ) {
+        R.id.btnScheduleWeekdays -> Schedule.WindowStyle.WEEKDAYS
+        R.id.btnScheduleWeekend -> Schedule.WindowStyle.WEEKEND
+        R.id.btnScheduleEveryday -> Schedule.WindowStyle.EVERYDAY
+        R.id.btnScheduleCustom -> Schedule.WindowStyle.CUSTOM
+        else -> Schedule.WindowStyle.OFF
+    }
+
+    private fun renderSchedule() {
+        val style = prefs.scheduleWindowStyle
+        findViewById<View>(R.id.scheduleCustomRow).visibility =
+            if (style == Schedule.WindowStyle.CUSTOM) View.VISIBLE else View.GONE
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnScheduleStart).text =
+            getString(R.string.schedule_custom_start, scheduleClock(prefs.scheduleStartMin))
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnScheduleEnd).text =
+            getString(R.string.schedule_custom_end, scheduleClock(prefs.scheduleEndMin))
+    }
+
+    private fun scheduleClock(minutes: Int): String {
+        val h = (minutes / 60).coerceIn(0, 23)
+        val m = minutes % 60
+        return String.format(java.util.Locale.ROOT, "%02d:%02d", h, m)
+    }
+
+    private fun showTimePicker(persistStart: Boolean) {
+        val current = if (persistStart) prefs.scheduleStartMin else prefs.scheduleEndMin
+        TimePickerDialog(
+            this,
+            { _, hourOfDay, minute ->
+                val value = hourOfDay * 60 + minute
+                if (persistStart) prefs.scheduleStartMin = value else prefs.scheduleEndMin = value
+                prefs.scheduleSnoozeUntilMillis = 0L
+                renderSchedule()
+            },
+            current / 60,
+            current % 60,
+            android.text.format.DateFormat.is24HourFormat(this)
+        ).show()
     }
 
     private fun currentPeriod(): Period = when (

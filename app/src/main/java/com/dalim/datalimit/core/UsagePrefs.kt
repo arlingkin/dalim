@@ -149,6 +149,24 @@ class UsagePrefs(context: Context) {
         get() = sp.getInt(KEY_BAT_SAMPLE_LEVEL, -1)
         set(v) = sp.edit().putInt(KEY_BAT_SAMPLE_LEVEL, v).apply()
 
+    // ---- Schedule (active window) ----
+    var scheduleWindowStyle: Schedule.WindowStyle
+        get() = Schedule.WindowStyle.from(sp.getString(KEY_SCHEDULE_STYLE, null))
+        set(v) = sp.edit().putString(KEY_SCHEDULE_STYLE, v.code).apply()
+
+    var scheduleStartMin: Int
+        get() = sp.getInt(KEY_SCHEDULE_START, 0)
+        set(v) = sp.edit().putInt(KEY_SCHEDULE_START, v.coerceIn(0, Schedule.MINUTES_PER_DAY - 1)).apply()
+
+    var scheduleEndMin: Int
+        get() = sp.getInt(KEY_SCHEDULE_END, Schedule.MINUTES_PER_DAY - 1)
+        set(v) = sp.edit().putInt(KEY_SCHEDULE_END, v.coerceIn(0, Schedule.MINUTES_PER_DAY - 1)).apply()
+
+    /** Deadline for the schedule snooze; 0 = not snoozed. Cleared by charge/resume anyway. */
+    var scheduleSnoozeUntilMillis: Long
+        get() = sp.getLong(KEY_SCHEDULE_SNOOZE, 0L)
+        set(v) = sp.edit().putLong(KEY_SCHEDULE_SNOOZE, v).apply()
+
     // ---- Notification vault ----
     var vaultEnabled: Boolean
         get() = sp.getBoolean(KEY_VAULT_ENABLED, false)
@@ -239,6 +257,11 @@ class UsagePrefs(context: Context) {
         private const val KEY_VAULT_ENABLED = "vault_enabled"
         private const val KEY_VAULT_RETENTION = "vault_retention_days"
         private const val KEY_VAULT_CLEANUP = "vault_last_cleanup"
+
+        private const val KEY_SCHEDULE_STYLE = "schedule_style"
+        private const val KEY_SCHEDULE_START = "schedule_start"
+        private const val KEY_SCHEDULE_END = "schedule_end"
+        private const val KEY_SCHEDULE_SNOOZE = "schedule_snooze_until"
 
         private const val KEY_FIREWALL = "firewall_enabled"
         private const val KEY_BLOCKED = "firewall_blocked"
