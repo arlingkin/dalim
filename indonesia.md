@@ -1,7 +1,7 @@
 # 🌟 Data Limit (dalim) — Bahasa Indonesia 🇮🇩
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Rilis](https://img.shields.io/badge/rilis-v0.4.25-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.4.25)
+[![Rilis](https://img.shields.io/badge/rilis-v0.5.0-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.5.0)
 
 > 🔎 Butuh versi **English**? Lihat → [README.md](README.md)
 
@@ -27,6 +27,13 @@ yang melacak **data**, **baterai**, **kubah notifikasi**, dan **firewall per
 aplikasi**, semuanya dari dasbor kartu yang didesain ulang — tanpa menambah
 dependensi baru.
 
+🚀 **v0.5.0 — "Perencanaan & Wawasan"** menambahkan **jendela jadwal** per
+periode (data dibatasi otomatis di luar jam yang Anda pilih), **ekspor/impor
+konfigurasi** (snapshot JSON tervalidasi lewat save/share sheet), **grafik
+riwayat pemakaian** di layar DATA (harian / mingguan / bulanan), serta **UI
+native yang beranimasi** dengan pengaturan "Reduce motion" — tetap tanpa
+dependensi baru.
+
 ---
 
 ## 📥 Download
@@ -36,10 +43,10 @@ rilis** 🔐. Dapat dipasang di **Android 8.0+** (API 26).
 
 | Versi | Tipe | Download |
 |-------|------|----------|
-| `v0.4.25` | Produksi · Ditandatangani | [datalimit-0.4.25-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.4.25/datalimit-0.4.25-signed.apk) |
+| `v0.5.0` | Produksi · Ditandatangani | [datalimit-0.5.0-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.5.0/datalimit-0.5.0-signed.apk) |
 
-- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.4.25](https://github.com/arlingkin/dalim/releases/tag/v0.4.25)
-- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.4.25/SHA256SUMS.txt)
+- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.5.0](https://github.com/arlingkin/dalim/releases/tag/v0.5.0)
+- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.5.0/SHA256SUMS.txt)
 
 Versi uji sebelumnya (`v0.2.x-pre`, tanpa tanda tangan / debug-signed) masih
 tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
@@ -52,13 +59,16 @@ tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
 |------|--------|
 | Jenis anggaran | Harian · Mingguan · Bulanan |
 | Gaya periode | Tetap (reset tengah malam) / Bergulir 24 jam |
+| Jendela jadwal | Off · Hari kerja · Akhir pekan · Setiap hari · Jam kustom — data dibatasi otomatis di luar jendela aktif |
 | Dasbor | Kartu langsung: Data (gauge, RX & TX, waktu cek) · Baterai · Kubah · Kontrol aplikasi · Pengaturan |
 | Gerbang data | Overlay pemblokiran layar penuh di atas aplikasi apa pun + peringatan layar penuh yang muncul lagi, pintu darurat "+100 MB" |
 | Panel baterai | Tegangan / suhu / laju pengurasan, perkiraan waktu habis, peringatan pengisian, penghentian saat baterai nyaris habis, grafik riwayat 24 jam |
-| Kubah notifikasi | Riwayat peringatan berbasis SQLite dengan retensi 3 / 7 / 30 hari, bisa dicari |
 | Grafik jaringan | Batang pemakaian per aplikasi untuk periode berjalan di layar DATA |
+| Riwayat pemakaian | Tab **History** di layar DATA: deret batang harian/mingguan/bulanan (12 periode, retensi 13 bulan) |
+| Transfer konfigurasi | **Ekspor / impor** snapshot JSON tervalidasi lewat save/share sheet (Pengaturan) |
 | Kubah notifikasi | Riwayat peringatan berbasis SQLite dengan retensi 3 / 7 / 30 hari, bisa dicari |
 | Firewall | Blokir per aplikasi + anggaran per aplikasi lewat **VPN** lokal (Android 8+, tanpa root), izin sementara hingga waktu tertentu |
+| UI animasi | Kartu masuk menyebar, angka berubah halus, grafik beranimasi — nonaktifkan lewat **Reduce motion** |
 | Autostart | Pemantauan dilanjutkan otomatis setelah perangkat reboot |
 | Izin | Alur sekali sentuh untuk Akses Penggunaan, Overlay, Notifikasi |
 | Bahasa | English · Bahasa Indonesia (ganti lewat aplikasi) |
@@ -118,9 +128,7 @@ dengan checksum `SHA256SUMS.txt`.
 ## 🗺️ Peta Jalan
 
 - 📡 Modul root/sistem opsional untuk benar-benar mematikan radio
-- 📅 Penjadwalan (mis. "akhir pekan tanpa batas")
-- 💾 Ekspor/impor konfigurasi
-- 📈 Riwayat koneksi / grafik laporan harian
+- (Penjadwalan, ekspor/impor konfigurasi, dan grafik riwayat sudah rilis di **v0.5.0**)
 
 ---
 

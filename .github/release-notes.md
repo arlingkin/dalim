@@ -1,11 +1,35 @@
-## Data Limit v0.4.25 — Charts & battery gate
+## Data Limit v0.5.0 — Scheduling, export/import, history & animated UI
 
-Signed production release on top of the **DALIM Core (v0.4.0)** engine with a
-pair of new charts and a fully working battery-floor gate.
+"Planning & Insights": on top of the **DALIM Core (v0.4.0)** engine, this
+release makes data gates follow a schedule you set, lets you move your config
+between devices, adds usage-history graphs, and polishes the whole UI with
+light-native animations. Still **zero new dependencies**.
 
 Check `SHA256SUMS.txt` to verify the file.
 
-### What's new in v0.4.25
+### What's new in v0.5.0
+- **Schedule window (auto data gate).** Choose when data may be used:
+  **Off · Weekdays · Weekend · Every day · Custom** time range (overnight
+  ranges work too, e.g. 22:00–06:00). Outside the window, usage is halted by
+  the existing full-screen gate; the dashboard data card and DATA screen show
+  the schedule status.
+- **Config export / import.** Settings gains **Export config / Import config**.
+  Export writes a **JSON snapshot** (`format: dalim-config`, versioned) via the
+  system save/share sheet; import reads it back through the file picker,
+  **validates before applying** (unknown/future fields ignored, missing fields
+  fall back to defaults, corrupt or wrong-version files are rejected with no
+  change), and restarts the monitor / rebuilds the firewall tunnel when needed.
+  Runtime monitoring state is never overwritten by an import.
+- **Usage history graphs.** The DATA screen gains a **History** tab with
+  **Daily / Weekly / Monthly** bar series (last 12 periods; one row per
+  window-rollover), stored in a new SQLite table kept for 13 months.
+- **Animated native UI.** Dashboard cards enter with a light staggered
+  fade/slide, usage / percent / battery values tween smoothly, and both charts
+  (per-app bars + battery line) animate on first draw — no new dependencies.
+  A **Reduce motion** switch in Settings disables the animations and paints the
+  final state instantly.
+
+### What's new in v0.4.25 (for reference)
 - **Network usage chart.** The **DATA** screen now lists per-app usage for the
   current window (daily / weekly / monthly, fixed or rolling) as horizontal
   bar rows — top 6 apps by bytes, live-refreshed.
@@ -28,10 +52,15 @@ Check `SHA256SUMS.txt` to verify the file.
 ### Feature set
 - Data budget (Daily / Weekly / Monthly, fixed or rolling 24 h), live gauge with
   RX & TX totals, foreground-service monitoring, boot autostart
+- Schedule window (Off / Weekdays / Weekend / Every day / Custom hours) with
+  auto data-gate outside the window
 - Full-screen data gate + overlay with "+100 MB" escape hatch
 - Battery panel: drain estimate, charge alerts, battery-floor halt, 24 h chart
 - Notifications vault (SQLite, 3/7/30-day retention) + per-app firewall &
   budgets via local VPN (no root)
+- Usage history graphs (Daily / Weekly / Monthly) on the DATA screen
+- Config export/import (validated JSON snapshot, SAF, atomic apply)
+- Animated native UI with a Reduce-motion accessibility option
 - Bilingual interface (English / Bahasa Indonesia)
 
 ### Known limits (Android)
