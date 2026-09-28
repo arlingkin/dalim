@@ -1,8 +1,6 @@
 package com.dalim.datalimit.core
 
 import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
 import java.time.ZoneId
 
 /**
@@ -68,7 +66,7 @@ object Schedule {
     }
 
     fun minutesOfDay(nowMillis: Long, zone: ZoneId = ZoneId.systemDefault()): Int =
-        LocalTime.ofInstant(java.time.Instant.ofEpochMilli(nowMillis), zone).toSecondOfDay() / 60
+        java.time.Instant.ofEpochMilli(nowMillis).atZone(zone).toLocalTime().toSecondOfDay() / 60
 
     /**
      * Next minute-of-day (same day or +1440) at which the time window opens for
