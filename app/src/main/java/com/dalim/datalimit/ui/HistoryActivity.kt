@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dalim.datalimit.R
 import com.dalim.datalimit.core.HistoryBuckets
 import com.dalim.datalimit.core.LocaleHelper
+import com.dalim.datalimit.core.UsagePrefs
 import com.dalim.datalimit.core.util.ByteFormat
 import com.dalim.datalimit.data.UsageHistoryStore
 import com.google.android.material.appbar.MaterialToolbar
@@ -22,6 +23,7 @@ class HistoryActivity : AppCompatActivity() {
     private var granularity: HistoryBuckets.Granularity = HistoryBuckets.Granularity.DAILY
 
     private val store by lazy { UsageHistoryStore(applicationContext) }
+    private val prefs by lazy { UsagePrefs(applicationContext) }
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.resolve(newBase))
@@ -86,6 +88,7 @@ class HistoryActivity : AppCompatActivity() {
         empty.visibility = if (anyUsage) View.GONE else View.VISIBLE
         if (anyUsage) {
             chart.setSeries(series)
+            chart.revealBars(Anim.enabled(prefs))
         }
 
         val rx = series.sumOf { it.rxBytes.coerceAtLeast(0L) }

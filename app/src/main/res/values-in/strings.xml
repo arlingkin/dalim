@@ -217,4 +217,16 @@
     <string name="schedule_gate_title">GERBANG JADWAL</string>
     <string name="schedule_gate_info_fmt">Data di-gerbang selama berada di luar jendela jadwal.</string>
     <string name="schedule_gate_snooze">Tunda hingga jendela terbuka</string>
+
+    <string name="config_section">KONFIGURASI</string>
+    <string name="export_config">Ekspor konfigurasi</string>
+    <string name="import_config">Impor konfigurasi</string>
+    <string name="config_hint">Cadangkan batas, jadwal, firewall, dan pengaturan baterai Anda sebagai berkas JSON, atau pulihkan di perangkat lain.</string>
+    <string name="snack_config_exported">Konfigurasi diekspor</string>
+    <string name="snack_config_export_failed">Tidak dapat menulis berkas konfigurasi</string>
+    <string name="snack_config_imported">Konfigurasi diimpor</string>
+    <string name="snack_config_invalid">Berkas ini bukan konfigurasi DALIM yang valid</string>
+
+    <string name="reduce_motion">Kurangi animasi</string>
+    <string name="reduce_motion_hint">Matikan animasi masuk dan perubahan nilai.</string>
 </resources>

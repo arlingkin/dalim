@@ -46,6 +46,8 @@ class DataActivity : AppCompatActivity() {
 
     private lateinit var prefs: UsagePrefs
     private lateinit var matcher: UsageMatcher
+    private var lastConsumedBytes = -1L
+    private var lastUsedPercent = -1
 
     private lateinit var usedText: TextView
     private lateinit var percentText: TextView
@@ -327,17 +329,20 @@ class DataActivity : AppCompatActivity() {
 
     private fun render() {
         val report = matcher.compute(System.currentTimeMillis())
+        val animate = Anim.enabled(prefs)
 
-        usedText.text = ByteFormat.format(report.consumedBytes)
+        Anim.countTo(usedText, lastConsumedBytes, report.consumedBytes, { ByteFormat.format(it) }, animate)
+        if (lastConsumedBytes != report.consumedBytes) lastConsumedBytes = report.consumedBytes
         limitText.text = getString(R.string.limit_label, ByteFormat.format(report.effectiveLimitBytes))
         remainingText.text =
             if (report.limitActive) getString(R.string.left_label, ByteFormat.format(report.remainingBytes))
             else getString(R.string.no_limit_set)
 
         if (report.limitActive) {
-            percentText.text = "${report.usedPercent.coerceAtMost(999)}%"
+            Anim.countTo(percentText, lastUsedPercent, report.usedPercent.coerceAtMost(999), { "$it%" }, animate)
+            lastUsedPercent = report.usedPercent.coerceAtMost(999)
             gateProgress.max = 100
-            gateProgress.progress = report.usedPercent.coerceAtMost(100)
+            Anim.animateProgress(gateProgress, report.usedPercent.coerceAtMost(100), animate)
             val exceeded = report.exceeded
             gateProgress.progressTintList = android.content.res.ColorStateList.valueOf(
                 if (exceeded) resources.getColor(R.color.danger)
@@ -346,7 +351,7 @@ class DataActivity : AppCompatActivity() {
             )
         } else {
             percentText.text = getString(R.string.no_limit)
-            gateProgress.progress = 0
+            Anim.animateProgress(gateProgress, 0, animate)
             gateProgress.progressTintList =
                 android.content.res.ColorStateList.valueOf(resources.getColor(R.color.accent))
         }
@@ -417,12 +422,14 @@ class DataActivity : AppCompatActivity() {
         val density = resources.displayMetrics.density
         val trackWidth = (96f * density).toInt()
         val max = data.first().totalBytes.coerceAtLeast(1L)
+        val animate = Anim.enabled(prefs)
 
         for (item in data) {
             val row = LinearLayout(this)
             row.orientation = LinearLayout.HORIZONTAL
             row.gravity = android.view.Gravity.CENTER_VERTICAL
             row.setPadding(0, (5f * density).toInt(), 0, (5f * density).toInt())
+            row.alpha = 0f
 
             val label = TextView(this)
             label.text = reader.appLabel(item.packageName)
@@ -450,8 +457,9 @@ class DataActivity : AppCompatActivity() {
             val percent = (item.totalBytes.toFloat() / max)
             val inner = View(this)
             inner.setBackgroundColor(resources.getColor(R.color.accent))
+            val targetWidth = (trackWidth * percent).coerceAtLeast(1f).toInt()
             track.addView(inner, FrameLayout.LayoutParams(
-                (trackWidth * percent).coerceAtLeast(1f).toInt(),
+                0,
                 (8f * density).toInt()
             ))
             row.addView(track, LinearLayout.LayoutParams(
@@ -459,6 +467,12 @@ class DataActivity : AppCompatActivity() {
             ).apply { marginStart = (10f * density).toInt() })
 
             appChartList.addView(row)
+
+            row.animate()
+                .alpha(1f)
+                .setDuration(220L)
+                .start()
+            Anim.growWidth(inner, targetWidth, animate)
         }
     }
 

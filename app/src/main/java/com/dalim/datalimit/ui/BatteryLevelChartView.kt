@@ -1,12 +1,14 @@
 package com.dalim.datalimit.ui
 
 import android.annotation.SuppressLint
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import com.dalim.datalimit.R
 import com.dalim.datalimit.data.BatteryHistoryStore
 import java.util.Locale
@@ -43,6 +45,33 @@ class BatteryLevelChartView @JvmOverloads constructor(
 
     private var points: List<BatteryHistoryStore.BatteryPoint> = emptyList()
 
+    /** 0f..1f left-to-right reveal fraction for the line; 1f when reduce-motion. */
+    private var reveal = 1f
+    private var animatedOnce = false
+
+    /**
+     * Reveal the line on first real data (M4): clip sweeps 0 -> 1. Paints
+     * instantly when [enabled] is false (reduce-motion) and is idempotent.
+     */
+    fun revealLine(enabled: Boolean) {
+        if (!enabled || animatedOnce) {
+            reveal = 1f
+            invalidate()
+            return
+        }
+        animatedOnce = true
+        reveal = 0f
+        ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 600L
+            interpolator = DecelerateInterpolator()
+            addUpdateListener {
+                reveal = it.animatedValue as Float
+                invalidate()
+            }
+            start()
+        }
+    }
+
     /** Feed a new series (oldest first); renders on the next draw pass. */
     fun setSeries(newPoints: List<BatteryHistoryStore.BatteryPoint>) {
         if (newPoints == points) return
@@ -61,6 +90,11 @@ class BatteryLevelChartView @JvmOverloads constructor(
         val bottom = height.toFloat() - pad
         val plotW = right - left
         val plotH = bottom - top
+
+        // Clip to the reveal sweep (M4) so the line/area appears left-to-right.
+        val clipRight = left + plotW * reveal.coerceIn(0f, 1f)
+        canvas.save()
+        canvas.clipRect(left, top, clipRight, bottom)
 
         // Grid lines every 25 %.
         for (g in 1..3) {
@@ -97,6 +131,8 @@ class BatteryLevelChartView @JvmOverloads constructor(
         val label = String.format(Locale.US, "%d%%", last.levelPercent)
         val ly = y(last).coerceIn(top + labelPaint.textSize, bottom)
         canvas.drawText(label, right - labelPaint.measureText(label), ly - dp(3), labelPaint)
+
+        canvas.restore()
     }
 
     private fun withAlpha(color: Int, alpha: Int): Int =

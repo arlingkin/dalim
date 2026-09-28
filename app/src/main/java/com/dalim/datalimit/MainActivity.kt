@@ -19,6 +19,7 @@ import com.dalim.datalimit.monitor.BatteryMonitor
 import com.dalim.datalimit.monitor.BatteryReceiver
 import com.dalim.datalimit.monitor.UsageMatcher
 import com.dalim.datalimit.ui.AppControlActivity
+import com.dalim.datalimit.ui.Anim
 import com.dalim.datalimit.ui.BatteryActivity
 import com.dalim.datalimit.ui.DataActivity
 import com.dalim.datalimit.ui.HistoryActivity
@@ -29,6 +30,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: UsagePrefs
     private lateinit var matcher: UsageMatcher
+    private var lastUsedBytes = -1L
+    private var lastUsedPercent = -1
+    private var lastBatteryLevel = -1
+    private var entranceAnimated = false
 
     private val handler = Handler(Looper.getMainLooper())
     private val batteryFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
@@ -110,9 +115,23 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (!entranceAnimated) {
+            entranceAnimated = true
+            animateEntrance()
+        }
         // Kick the ticker immediately on first appearance (self-rescheduling);
         // do not post a second copy here.
         refreshTick.run()
+    }
+
+    private fun animateEntrance() {
+        val animate = Anim.enabled(prefs)
+        val data = findViewById<android.view.View>(R.id.cardData)
+        val battery = findViewById<android.view.View>(R.id.cardBattery)
+        val notifications = findViewById<android.view.View>(R.id.cardNotifications)
+        Anim.fadeSlideIn(data, animate, delayMs = 0)
+        Anim.fadeSlideIn(battery, animate, delayMs = 90)
+        Anim.fadeSlideIn(notifications, animate, delayMs = 180)
     }
 
     override fun onPause() {
@@ -131,17 +150,20 @@ class MainActivity : AppCompatActivity() {
         val percent = findViewById<android.widget.TextView>(R.id.percentText)
         val progress = findViewById<android.widget.ProgressBar>(R.id.gateProgress)
         val status = findViewById<android.widget.TextView>(R.id.dataStatusText)
+        val animate = Anim.enabled(prefs)
 
-        used.text = ByteFormat.format(report.consumedBytes)
+        Anim.countTo(used, lastUsedBytes, report.consumedBytes, { ByteFormat.format(it) }, animate)
+        if (lastUsedBytes != report.consumedBytes) lastUsedBytes = report.consumedBytes
         status.text = getString(if (prefs.monitoringEnabled) R.string.monitor_on else R.string.monitor_off)
         renderScheduleStatus()
 
         val sub = findViewById<android.widget.TextView>(R.id.cardDataSub)
         if (report.limitActive) {
             val pct = report.usedPercent.coerceAtMost(999)
-            percent.text = "$pct%"
+            Anim.countTo(percent, lastUsedPercent, pct, { "$it%" }, animate)
+            lastUsedPercent = pct
             progress.max = 100
-            progress.progress = report.usedPercent.coerceAtMost(100)
+            Anim.animateProgress(progress, report.usedPercent.coerceAtMost(100), animate)
             progress.progressTintList = android.content.res.ColorStateList.valueOf(
                 if (report.exceeded) resources.getColor(R.color.danger)
                 else if (report.usedPercent >= 80) resources.getColor(R.color.warn)
@@ -154,7 +176,7 @@ class MainActivity : AppCompatActivity() {
             )
         } else {
             percent.text = getString(R.string.no_limit)
-            progress.progress = 0
+            Anim.animateProgress(progress, 0, animate)
             progress.progressTintList = android.content.res.ColorStateList.valueOf(resources.getColor(R.color.accent))
             sub.text = getString(R.string.card_data_off)
         }
@@ -175,7 +197,8 @@ class MainActivity : AppCompatActivity() {
             sub.text = getString(R.string.battery_no_estimate)
             return
         }
-        text.text = "${snapshot.levelPercent}%"
+        Anim.countTo(text, lastBatteryLevel, snapshot.levelPercent, { "$it%" }, Anim.enabled(prefs))
+        lastBatteryLevel = snapshot.levelPercent
         sub.text = when {
             snapshot.drainCalculated ->
                 getString(R.string.battery_estimate_fmt, formattedHours(snapshot.estimateHours))

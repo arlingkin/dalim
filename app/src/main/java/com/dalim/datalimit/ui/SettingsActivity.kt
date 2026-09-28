@@ -7,13 +7,16 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.dalim.datalimit.BuildConfig
 import com.dalim.datalimit.R
 import com.dalim.datalimit.core.LocaleHelper
 import com.dalim.datalimit.core.UsagePrefs
+import com.dalim.datalimit.data.ConfigExchange
 import com.dalim.datalimit.data.SqliteNotificationStore
 import com.dalim.datalimit.monitor.TrafficMonitorService
+import com.dalim.datalimit.service.FirewallVpnService
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.snackbar.Snackbar
@@ -21,6 +24,18 @@ import com.google.android.material.snackbar.Snackbar
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var prefs: UsagePrefs
+
+    private val exportLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri != null) doExport(uri)
+    }
+
+    private val importLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) doImport(uri)
+    }
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.resolve(newBase))
@@ -41,6 +56,8 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<MaterialButtonToggleGroup>(R.id.languageGroup).check(
             if (prefs.language == LocaleHelper.LANG_ID) R.id.btnIndonesia else R.id.btnEnglish
         )
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchReduceMotion)
+            .isChecked = prefs.reduceMotion
         wire()
     }
 
@@ -93,6 +110,100 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }.start()
         }
+
+        findViewById<android.view.View>(R.id.btnExportConfig).setOnClickListener {
+            exportLauncher.launch("dalim-config.json")
+        }
+
+        findViewById<android.view.View>(R.id.btnImportConfig).setOnClickListener {
+            importLauncher.launch(arrayOf("application/json", "application/octet-stream", "text/*"))
+        }
+
+        findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchReduceMotion)
+            .setOnCheckedChangeListener { _, checked ->
+                prefs.reduceMotion = checked
+            }
+    }
+
+    /** Write the current prefs as a JSON config to the user-chosen [uri]. */
+    private fun doExport(uri: Uri) {
+        Thread {
+            val json = ConfigExchange.toJson(prefs)
+            try {
+                contentResolver.openOutputStream(uri)?.use { out ->
+                    out.write(json.toByteArray(Charsets.UTF_8))
+                }
+                runOnUiThread {
+                    Snackbar.make(
+                        findViewById(R.id.toolbar),
+                        getString(R.string.snack_config_exported),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (_: Exception) {
+                runOnUiThread {
+                    Snackbar.make(
+                        findViewById(R.id.toolbar),
+                        getString(R.string.snack_config_export_failed),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }.apply { isDaemon = true }.start()
+    }
+
+    /**
+     * Read + validate a config file, then apply it atomically and restart the
+     * monitor (mirrors the language-change restart) and the firewall tunnel.
+     */
+    private fun doImport(uri: Uri) {
+        Thread {
+            val raw = try {
+                contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
+            } catch (_: Exception) {
+                null
+            }
+            if (raw.isNullOrBlank()) {
+                runOnUiThread {
+                    Snackbar.make(
+                        findViewById(R.id.toolbar),
+                        getString(R.string.snack_config_invalid),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+                return@Thread
+            }
+
+            val patch = ConfigExchange.fromJson(raw).getOrNull()
+            if (patch == null) {
+                runOnUiThread {
+                    Snackbar.make(
+                        findViewById(R.id.toolbar),
+                        getString(R.string.snack_config_invalid),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+                return@Thread
+            }
+
+            val wasMonitoring = prefs.monitoringEnabled
+            prefs.apply(patch)
+            if (wasMonitoring) {
+                TrafficMonitorService.stop(this)
+                TrafficMonitorService.start(this)
+            }
+            if (patch.firewallEnabled || prefs.firewallEnabled) {
+                // Rebuild so the tunnel reflects the imported blocklist/budgets.
+                FirewallVpnService.requestRebuild(this)
+            }
+            runOnUiThread {
+                Snackbar.make(
+                    findViewById(R.id.toolbar),
+                    getString(R.string.snack_config_imported),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        }.apply { isDaemon = true }.start()
     }
 
     private fun refreshPermissionRows() {
