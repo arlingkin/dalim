@@ -55,6 +55,9 @@ class TrafficMonitorService : Service() {
     private var historySeeded = false
     private var lastHistoryPurgeAt = 0L
     private val usageHistory by lazy { UsageHistoryStore(applicationContext) }
+    private val batteryHistory by lazy { BatteryHistoryStore(applicationContext) }
+    private var lastHistoryLevel = -1
+    private var lastHistoryAtMillis = 0L
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -179,8 +182,25 @@ class TrafficMonitorService : Service() {
             temperatureTenthsC = read.temperatureTenthsC,
             voltageMv = read.voltageMv
         )
-        BatteryHistoryStore(applicationContext).append(System.currentTimeMillis(), read.level)
+        recordBatteryHistory(read.level)
         return snap
+    }
+
+    /**
+     * Append one chart point per real change. This runs several times per poll,
+     * and a fresh store per call used to open (and leak) a SQLite connection
+     * every time while writing duplicate rows into the same minute.
+     */
+    private fun recordBatteryHistory(level: Int) {
+        val now = System.currentTimeMillis()
+        if (level == lastHistoryLevel && now - lastHistoryAtMillis < HISTORY_MAX_MILLIS) return
+        try {
+            batteryHistory.append(now, level)
+        } catch (_: Exception) {
+            return
+        }
+        lastHistoryLevel = level
+        lastHistoryAtMillis = now
     }
 
     /**
@@ -283,6 +303,7 @@ class TrafficMonitorService : Service() {
         private const val BASE_POLL_MS = 60_000L
         private const val FAST_POLL_MS = 10_000L
         private const val DAY_MS = 86_400_000L
+        private const val HISTORY_MAX_MILLIS = 5 * 60_000L
 
         const val ACTION_RESET = "com.dalim.datalimit.action.RESET"
         const val ACTION_STOP = "com.dalim.datalimit.action.STOP"

@@ -27,6 +27,7 @@ class NotificationsActivity : AppCompatActivity() {
 
     private lateinit var prefs: UsagePrefs
     private lateinit var store: SqliteNotificationStore
+    private val background = Background()
 
     private lateinit var vaultList: LinearLayout
     private lateinit var vaultEmpty: TextView
@@ -35,6 +36,7 @@ class NotificationsActivity : AppCompatActivity() {
     private lateinit var btnVaultGrant: MaterialButton
 
     private val rows = mutableListOf<VaultEntry>()
+    private var result = VaultListResult(emptyList(), 0)
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.resolve(newBase))
@@ -101,10 +103,9 @@ class NotificationsActivity : AppCompatActivity() {
                         R.id.btnRetention30 -> 30
                         else -> 7
                     }
-                    Thread {
+                    background.run(coalesce = false, then = ::refreshList) {
                         cleanup()
-                        runOnUiThread { refreshList() }
-                    }.start()
+                    }
                 }
             }
 
@@ -115,10 +116,9 @@ class NotificationsActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btnVaultClear).setOnClickListener {
-            Thread {
+            background.run(coalesce = false, then = ::refreshList) {
                 store.clearAll()
-                runOnUiThread { refreshList() }
-            }.start()
+            }
             Snackbar.make(findViewById(R.id.toolbar), getString(R.string.vault_cleared), Snackbar.LENGTH_SHORT).show()
         }
 
@@ -159,11 +159,14 @@ class NotificationsActivity : AppCompatActivity() {
         val search = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.searchInput)
             .text?.toString()?.trim().orEmpty()
         val importantOnly = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchImportant).isChecked
-        Thread {
-            cleanup()
-            val entries = store.query(search, importantOnly, null, MAX_ROWS, 0L)
-            runOnUiThread { renderList(entries) }
-        }.start()
+        background.run(
+            then = { if (!isFinishing && !isDestroyed) renderList(result) }
+        ) { result = loadSeries(search, importantOnly) }
+    }
+
+    private fun loadSeries(search: String, importantOnly: Boolean): VaultListResult {
+        cleanup()
+        return VaultListResult(store.query(search, importantOnly, null, MAX_ROWS, 0L), store.totalCount())
     }
 
     private fun cleanup() {
@@ -172,18 +175,18 @@ class NotificationsActivity : AppCompatActivity() {
         store.cleanupBefore(before)
     }
 
-    private fun renderList(entries: List<VaultEntry>) {
+    private fun renderList(data: VaultListResult) {
         rows.clear()
-        rows.addAll(entries)
+        rows.addAll(data.entries)
         vaultList.removeAllViews()
-        vaultCount.text = getString(R.string.vault_count_fmt, store.totalCount())
+        vaultCount.text = getString(R.string.vault_count_fmt, data.total)
 
-        if (entries.isEmpty()) {
+        if (data.entries.isEmpty()) {
             vaultEmpty.visibility = View.VISIBLE
             return
         }
         vaultEmpty.visibility = View.GONE
-        for (entry in entries) {
+        for (entry in data.entries) {
             vaultList.addView(rowFor(entry), ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -239,10 +242,9 @@ class NotificationsActivity : AppCompatActivity() {
             mark.setPadding(dp(6), 0, dp(6), 0)
             mark.setTextColor(0xFF0D47A1.toInt())
             mark.setOnClickListener {
-                Thread {
+                background.run(coalesce = false, then = ::refreshList) {
                     store.markRead(entry.id)
-                    runOnUiThread { refreshList() }
-                }.start()
+                }
             }
             row.addView(mark)
         }
@@ -253,10 +255,9 @@ class NotificationsActivity : AppCompatActivity() {
         del.setPadding(dp(6), 0, dp(6), 0)
         del.setTextColor(0xFFD32F2F.toInt())
         del.setOnClickListener {
-            Thread {
+            background.run(coalesce = false, then = ::refreshList) {
                 store.delete(entry.id)
-                runOnUiThread { refreshList() }
-            }.start()
+            }
         }
         row.addView(del)
 
@@ -275,4 +276,6 @@ class NotificationsActivity : AppCompatActivity() {
     companion object {
         private const val MAX_ROWS = 200
     }
+
+    private data class VaultListResult(val entries: List<VaultEntry>, val total: Int)
 }

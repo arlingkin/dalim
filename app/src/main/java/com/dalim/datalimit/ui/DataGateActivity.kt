@@ -21,7 +21,7 @@ class DataGateActivity : Activity() {
     private val handler = Handler(Looper.getMainLooper())
     private val refresh = object : Runnable {
         override fun run() {
-            render()
+            renderSafely()
             handler.postDelayed(this, 5_000L)
         }
     }
@@ -38,7 +38,7 @@ class DataGateActivity : Activity() {
 
         findViewById<View>(R.id.btnAllow).setOnClickListener {
             prefs.extraAllowanceMb += 100L
-            render()
+            renderSafely()
             handler.removeCallbacks(refresh)
             finish()
         }
@@ -56,13 +56,20 @@ class DataGateActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        render()
+        renderSafely()
         handler.postDelayed(refresh, 5_000L)
     }
 
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(refresh)
+    }
+
+    private fun renderSafely() {
+        try {
+            render()
+        } catch (_: Throwable) {
+        }
     }
 
     private fun render() {

@@ -38,6 +38,7 @@ class AppControlActivity : AppCompatActivity() {
     private lateinit var btnVpnAllow: MaterialButton
 
     private var apps: List<PackageTotal> = emptyList()
+    private val background = Background()
 
     private val vpnPermission = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -146,18 +147,22 @@ class AppControlActivity : AppCompatActivity() {
 
         val start = PeriodRange.startOfMonthMillis(System.currentTimeMillis())
         val end = System.currentTimeMillis()
-        Thread {
-            val result = try {
+        background.run(
+            then = {
+                if (!isFinishing && !isDestroyed) {
+                    loadingText.visibility = View.GONE
+                    renderApps()
+                }
+            }
+        ) {
+            apps = try {
                 reader.fetchAll(start, end)
+                    .sortedByDescending { it.rxBytes + it.txBytes }
+                    .take(MAX_APP_ROWS)
             } catch (_: Exception) {
                 emptyList()
             }
-            runOnUiThread {
-                loadingText.visibility = View.GONE
-                apps = result.sortedByDescending { it.rxBytes + it.txBytes }
-                renderApps()
-            }
-        }.apply { isDaemon = true }.start()
+        }
     }
 
     private fun renderApps() {
@@ -281,4 +286,8 @@ class AppControlActivity : AppCompatActivity() {
 
     private fun dp(value: Int): Int =
         (value * resources.displayMetrics.density).toInt()
+
+    private companion object {
+        const val MAX_APP_ROWS = 100
+    }
 }

@@ -20,6 +20,7 @@ import com.dalim.datalimit.monitor.BatteryReceiver
 import com.dalim.datalimit.monitor.UsageMatcher
 import com.dalim.datalimit.ui.AppControlActivity
 import com.dalim.datalimit.ui.Anim
+import com.dalim.datalimit.ui.Background
 import com.dalim.datalimit.ui.BatteryActivity
 import com.dalim.datalimit.ui.DataActivity
 import com.dalim.datalimit.ui.HistoryActivity
@@ -30,6 +31,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: UsagePrefs
     private lateinit var matcher: UsageMatcher
+    private lateinit var vaultStore: SqliteNotificationStore
+    private val vaultBackground = Background()
+    private var vaultCount = 0
     private var lastUsedBytes = -1L
     private var lastUsedPercent = -1
     private var lastBatteryLevel = -1
@@ -79,6 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         prefs = UsagePrefs(this)
         matcher = UsageMatcher(prefs, LocaleHelper.resolve(applicationContext))
+        vaultStore = SqliteNotificationStore(applicationContext)
 
         findViewById<android.view.View>(R.id.cardData).setOnClickListener {
             startActivity(Intent(this, DataActivity::class.java))
@@ -260,17 +265,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderVault() {
         val enabled = prefs.vaultEnabled
-        val big = findViewById<android.widget.TextView>(R.id.cardVaultText)
         if (!enabled) {
-            big.text = getString(R.string.card_vault_off)
+            findViewById<android.widget.TextView>(R.id.cardVaultText).text = getString(R.string.card_vault_off)
             return
         }
-        Thread {
-            val count = SqliteNotificationStore(applicationContext).totalCount()
-            runOnUiThread {
-                big.text = getString(R.string.card_vault_fmt, count)
-            }
-        }.apply { isDaemon = true }.start()
+        vaultBackground.run(
+            then = { if (!isFinishing && !isDestroyed) refreshVaultCount() }
+        ) { vaultCount = vaultStore.totalCount() }
+    }
+
+    private fun refreshVaultCount() {
+        findViewById<android.widget.TextView>(R.id.cardVaultText).text =
+            getString(R.string.card_vault_fmt, vaultCount)
     }
 
     private fun formattedHours(hours: Double): String {

@@ -63,7 +63,9 @@ class DataActivity : AppCompatActivity() {
     private lateinit var appChartList: LinearLayout
     private lateinit var appChartEmpty: TextView
 
-    private val reader = NetworkStatsReader(applicationContext)
+    private val reader by lazy { NetworkStatsReader(applicationContext) }
+    private val background = Background()
+    private var appChartData: List<PackageTotal>? = null
     private var lastChartAtMillis = 0L
 
     private val handler = Handler(Looper.getMainLooper())
@@ -128,7 +130,7 @@ class DataActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        render()
+        renderSafely()
         refreshAppChart()
         handler.postDelayed(refreshTick, 5_000L)
     }
@@ -391,12 +393,22 @@ class DataActivity : AppCompatActivity() {
     private fun refreshAppChart() {
         lastChartAtMillis = System.currentTimeMillis()
         val start = periodStartMillis(lastChartAtMillis)
-        Thread {
-            val data = reader.fetchAll(start, lastChartAtMillis)
+        val now = lastChartAtMillis
+        appChartData = null
+        background.run(
+            then = { if (!isFinishing && !isDestroyed) appChartData?.let(::renderAppChart) }
+        ) {
+            appChartData = reader.fetchAll(start, now)
                 .sortedByDescending { it.totalBytes }
                 .take(MAX_APP_ROWS)
-            runOnUiThread { renderAppChart(data) }
-        }.apply { isDaemon = true }.start()
+        }
+    }
+
+    private fun renderSafely() {
+        try {
+            render()
+        } catch (_: Throwable) {
+        }
     }
 
     private fun periodStartMillis(now: Long): Long {

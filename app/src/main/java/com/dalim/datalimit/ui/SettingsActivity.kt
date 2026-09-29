@@ -24,6 +24,12 @@ import com.google.android.material.snackbar.Snackbar
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var prefs: UsagePrefs
+    private lateinit var vaultStore: SqliteNotificationStore
+    private val background = Background()
+
+    /** Result of the last export/import, resolved to text on the main thread. */
+    private var resultMessage = 0
+    private var resultFailed = false
 
     private val exportLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -46,6 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         prefs = UsagePrefs(this)
+        vaultStore = SqliteNotificationStore(applicationContext)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -103,12 +110,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         findViewById<android.view.View>(R.id.btnResetVault).setOnClickListener {
-            Thread {
-                SqliteNotificationStore(applicationContext).clearAll()
-                runOnUiThread {
-                    Snackbar.make(findViewById(R.id.toolbar), getString(R.string.vault_cleared), Snackbar.LENGTH_SHORT).show()
-                }
-            }.start()
+            background.run(coalesce = false, then = { reportVaultCleared() }) {
+                vaultStore.clearAll()
+            }
         }
 
         findViewById<android.view.View>(R.id.btnExportConfig).setOnClickListener {
@@ -127,29 +131,48 @@ class SettingsActivity : AppCompatActivity() {
 
     /** Write the current prefs as a JSON config to the user-chosen [uri]. */
     private fun doExport(uri: Uri) {
-        Thread {
+        background.run(coalesce = false, then = ::reportResult) {
             val json = ConfigExchange.toJson(prefs)
-            try {
+            val written = try {
                 contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(json.toByteArray(Charsets.UTF_8))
                 }
-                runOnUiThread {
-                    Snackbar.make(
-                        findViewById(R.id.toolbar),
-                        getString(R.string.snack_config_exported),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
+                true
             } catch (_: Exception) {
-                runOnUiThread {
-                    Snackbar.make(
-                        findViewById(R.id.toolbar),
-                        getString(R.string.snack_config_export_failed),
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                }
+                false
             }
-        }.apply { isDaemon = true }.start()
+            if (written) {
+                finishWith(R.string.snack_config_exported)
+            } else {
+                failWith(R.string.snack_config_export_failed)
+            }
+        }
+    }
+
+    private fun finishWith(res: Int) {
+        resultMessage = res
+        resultFailed = false
+    }
+
+    private fun failWith(res: Int) {
+        resultMessage = res
+        resultFailed = true
+    }
+
+    private fun reportResult() {
+        Snackbar.make(
+            findViewById(R.id.toolbar),
+            getString(resultMessage),
+            if (resultFailed) Snackbar.LENGTH_LONG else Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun reportVaultCleared() {
+        Snackbar.make(
+            findViewById(R.id.toolbar),
+            getString(R.string.vault_cleared),
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     /**
@@ -157,37 +180,29 @@ class SettingsActivity : AppCompatActivity() {
      * monitor (mirrors the language-change restart) and the firewall tunnel.
      */
     private fun doImport(uri: Uri) {
-        Thread {
+        background.run(coalesce = false, then = ::reportResult) {
             val raw = try {
                 contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
             } catch (_: Exception) {
                 null
             }
-            if (raw.isNullOrBlank()) {
-                runOnUiThread {
-                    Snackbar.make(
-                        findViewById(R.id.toolbar),
-                        getString(R.string.snack_config_invalid),
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                }
-                return@Thread
-            }
-
-            val patch = ConfigExchange.fromJson(raw).getOrNull()
+            val patch = if (raw.isNullOrBlank()) null else ConfigExchange.fromJson(raw).getOrNull()
             if (patch == null) {
-                runOnUiThread {
-                    Snackbar.make(
-                        findViewById(R.id.toolbar),
-                        getString(R.string.snack_config_invalid),
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                }
-                return@Thread
+                failWith(R.string.snack_config_invalid)
+                return@run
             }
 
             val wasMonitoring = prefs.monitoringEnabled
-            prefs.apply(patch)
+            val applied = try {
+                prefs.apply(patch)
+                true
+            } catch (_: Exception) {
+                false
+            }
+            if (!applied) {
+                failWith(R.string.snack_config_invalid)
+                return@run
+            }
             if (wasMonitoring) {
                 TrafficMonitorService.stop(this)
                 TrafficMonitorService.start(this)
@@ -196,14 +211,8 @@ class SettingsActivity : AppCompatActivity() {
                 // Rebuild so the tunnel reflects the imported blocklist/budgets.
                 FirewallVpnService.requestRebuild(this)
             }
-            runOnUiThread {
-                Snackbar.make(
-                    findViewById(R.id.toolbar),
-                    getString(R.string.snack_config_imported),
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            }
-        }.apply { isDaemon = true }.start()
+            finishWith(R.string.snack_config_imported)
+        }
     }
 
     private fun refreshPermissionRows() {

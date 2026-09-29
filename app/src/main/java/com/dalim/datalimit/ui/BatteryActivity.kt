@@ -38,15 +38,22 @@ class BatteryActivity : AppCompatActivity() {
     private lateinit var startSlider: Slider
     private lateinit var batteryChart: BatteryLevelChartView
     private lateinit var batteryChartHint: TextView
+    private var batterySeries: List<BatteryHistoryStore.BatteryPoint> = emptyList()
 
-    private val history = BatteryHistoryStore(applicationContext)
+    private val history by lazy { BatteryHistoryStore(applicationContext) }
 
     private val batteryFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
     private val handler = Handler(Looper.getMainLooper())
+    private val background = Background()
 
     private val refreshTick = object : Runnable {
         override fun run() {
-            render()
+            try {
+                render()
+            } catch (_: Throwable) {
+                // Same rule as the dashboard: a render failure must never take
+                // the screen (and with it the process) down.
+            }
             handler.postDelayed(this, 5_000L)
         }
     }
@@ -189,15 +196,18 @@ class BatteryActivity : AppCompatActivity() {
     }
 
     private fun recordAndRefreshChart(level: Int) {
-        history.append(System.currentTimeMillis(), level)
-        Thread {
-            val series = history.series(24, System.currentTimeMillis())
-            runOnUiThread {
-                batteryChart.setSeries(series)
-                batteryChart.revealLine(Anim.enabled(prefs))
-                batteryChartHint.visibility = if (series.size < 2) View.VISIBLE else View.GONE
-            }
-        }.apply { isDaemon = true }.start()
+        background.run(
+            then = { if (!isFinishing && !isDestroyed) paintChart(batterySeries) }
+        ) {
+            history.append(System.currentTimeMillis(), level)
+            batterySeries = history.series(CHART_HOURS, System.currentTimeMillis())
+        }
+    }
+
+    private fun paintChart(series: List<BatteryHistoryStore.BatteryPoint>) {
+        batteryChart.setSeries(series)
+        batteryChart.revealLine(Anim.enabled(prefs))
+        batteryChartHint.visibility = if (series.size < 2) View.VISIBLE else View.GONE
     }
 
     private fun renderSnapshot(snapshot: BatterySnapshot) {
@@ -256,5 +266,9 @@ class BatteryActivity : AppCompatActivity() {
         val h = totalMinutes / 60
         val m = totalMinutes % 60
         return if (h > 0L) "${h}h ${m}m" else "${m}m"
+    }
+
+    private companion object {
+        const val CHART_HOURS = 24
     }
 }

@@ -21,9 +21,11 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 class HistoryActivity : AppCompatActivity() {
 
     private var granularity: HistoryBuckets.Granularity = HistoryBuckets.Granularity.DAILY
+    private var series: List<HistoryBuckets.Bucket> = emptyList()
 
     private val store by lazy { UsageHistoryStore(applicationContext) }
     private val prefs by lazy { UsagePrefs(applicationContext) }
+    private val background = Background()
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.resolve(newBase))
@@ -72,10 +74,10 @@ class HistoryActivity : AppCompatActivity() {
 
     private fun load() {
         val now = System.currentTimeMillis()
-        Thread {
-            val series = store.series(granularity, UsageHistoryStore.MAX_BUCKETS, now)
-            runOnUiThread { render(series) }
-        }.apply { isDaemon = true }.start()
+        val wanted = granularity
+        background.run(
+            then = { if (!isFinishing && !isDestroyed) render(series) }
+        ) { series = store.series(wanted, UsageHistoryStore.MAX_BUCKETS, now) }
     }
 
     private fun render(series: List<HistoryBuckets.Bucket>) {

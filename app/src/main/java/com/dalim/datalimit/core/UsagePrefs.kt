@@ -13,11 +13,11 @@ class UsagePrefs(context: Context) {
         set(v) = sp.edit().putLong(KEY_LIMIT, v).apply()
 
     var period: Period
-        get() = Period.valueOf(sp.getString(KEY_PERIOD, Period.DAILY.name) ?: Period.DAILY.name)
+        get() = Period.entries.firstOrNull { it.name == sp.getString(KEY_PERIOD, null) } ?: Period.DAILY
         set(v) = sp.edit().putString(KEY_PERIOD, v.name).apply()
 
     var windowStyle: WindowStyle
-        get() = WindowStyle.valueOf(sp.getString(KEY_STYLE, WindowStyle.FIXED.name) ?: WindowStyle.FIXED.name)
+        get() = WindowStyle.entries.firstOrNull { it.name == sp.getString(KEY_STYLE, null) } ?: WindowStyle.FIXED
         set(v) = sp.edit().putString(KEY_STYLE, v.name).apply()
 
     var gateEnabled: Boolean
