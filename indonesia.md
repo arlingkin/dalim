@@ -1,7 +1,7 @@
 # 🌟 Data Limit (dalim) — Bahasa Indonesia 🇮🇩
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Rilis](https://img.shields.io/badge/rilis-v0.5.1-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.5.1)
+[![Rilis](https://img.shields.io/badge/rilis-v0.5.2-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.5.2)
 
 > 🔎 Butuh versi **English**? Lihat → [README.md](README.md)
 
@@ -34,6 +34,13 @@ riwayat pemakaian** di layar DATA (harian / mingguan / bulanan), serta **UI
 native yang beranimasi** dengan pengaturan "Reduce motion" — tetap tanpa
 dependensi baru.
 
+🛡️ **v0.5.2 — perbaikan crash saat menekan kartu.** Kartu **DATA** dan
+**BATTERY** bisa langsung menutup aplikasi saat ditekan: kedua layar membaca
+konteks aplikasi sebelum terlampir, sehingga membuka salah satunya gagal.
+v0.5.2 memperbaikinya sekaligus menghentikan aplikasi yang membuka koneksi
+database baru tiap beberapa detik, yang bisa membuat sesi panjang berakhir
+lebih awal.
+
 🛡️ **v0.5.1 — perbaikan stabilitas.** Di beberapa perangkat aplikasi bisa
 tutup sendiri berulang-ulang (tick pemantauan membuat seluruh aplikasi crash
 lalu di-restart terus-menerus). v0.5.1 mengamankan setiap jalur pemantauan dan
@@ -48,10 +55,10 @@ rilis** 🔐. Dapat dipasang di **Android 8.0+** (API 26).
 
 | Versi | Tipe | Download |
 |-------|------|----------|
-| `v0.5.1` | Produksi · Ditandatangani | [datalimit-0.5.1-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.5.1/datalimit-0.5.1-signed.apk) |
+| `v0.5.2` | Produksi · Ditandatangani | [datalimit-0.5.2-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.5.2/datalimit-0.5.2-signed.apk) |
 
-- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.5.1](https://github.com/arlingkin/dalim/releases/tag/v0.5.1)
-- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.5.1/SHA256SUMS.txt)
+- Halaman rilis (pranala ke tag): [github.com/arlingkin/dalim/releases/tag/v0.5.2](https://github.com/arlingkin/dalim/releases/tag/v0.5.2)
+- Cek jumlah: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.5.2/SHA256SUMS.txt)
 
 Versi uji sebelumnya (`v0.2.x-pre`, tanpa tanda tangan / debug-signed) masih
 tersedia di [halaman rilis](https://github.com/arlingkin/dalim/releases).
@@ -135,6 +142,7 @@ dengan checksum `SHA256SUMS.txt`.
 - 📡 Modul root/sistem opsional untuk benar-benar mematikan radio
 - (Penjadwalan, ekspor/impor konfigurasi, dan grafik riwayat sudah rilis di **v0.5.0**)
 - (Pengamanan anti-crash-loop sudah rilis di **v0.5.1**)
+- (Perbaikan crash saat menekan kartu dan koneksi database sudah rilis di **v0.5.2**)
 
 ---
 

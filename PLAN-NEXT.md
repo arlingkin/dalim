@@ -1,9 +1,34 @@
-# PLAN-NEXT — release planning after v0.5.1
+# PLAN-NEXT — release planning after v0.5.2
 
 > Working notes for the next release. Same rules that shipped v0.5.0: feature
 > branch → CI (test + lint + assembleRelease) → fixes → merge to **main** →
 > release. No new dependencies; all state in `UsagePrefs` / SQLite; every
 > screen/feature bilingual (EN / ID).
+
+## 🧪 v0.5.2 — in verification (card-tap crash fix)
+- versionCode **11** · versionName **0.5.2** · workflow `APP_VERSION: 0.5.2`.
+- **Fix — card-tap crash:** `DataActivity` and `BatteryActivity` read
+  `applicationContext` in a field initializer, which runs before
+  `attachBaseContext`, so `ContextWrapper.mBase` was null and both screens
+  died during construction — tapping the DATA or BATTERY card force-closed
+  the app. Both now initialize lazily.
+- **Fix — DB/thread churn:** added `ui/Background.kt`, a single serialized
+  worker. Every screen used to spawn a raw `Thread` per 5 s tick and per
+  keystroke, each opening its own SQLite connection (the dashboard leaked one
+  connection every 5 s). Refresh jobs coalesce; mutating jobs
+  (`coalesce = false`) are never dropped.
+- **Fix — duplicate battery rows:** `TrafficMonitorService.batterySnapshot()`
+  ran 3x per poll and appended a row each time, on a fresh store per call. Now
+  one reused store, recording only on a real level change.
+- Also: `COUNT(*)` moved off the main thread in NOTIFICATIONS, `prefs.apply`
+  guarded in SETTINGS config import, `AppControlActivity` capped at 100 rows,
+  render guarded on resume in DATA / DATA GATE, and `UsagePrefs` enum parsing
+  falls back to a default instead of throwing.
+- Docs rolled: README.md + indonesia.md + .github/release-notes.md updated.
+- **Not yet verified on the reporter's device** — the original report was that
+  tapping a card force-closes the app. The unit tests are pure-logic only
+  (`core` / `data` / `monitor`) and do not exercise any Activity, so CI green
+  proves it builds, not that the crash is gone. Awaiting on-device confirmation.
 
 ## ✅ v0.5.1 — shipped (stability fix)
 - versionCode **10** · versionName **0.5.1** · workflow `APP_VERSION: 0.5.1`.
@@ -38,8 +63,8 @@
   public roadmap keeps only the root-radio module item.
 
 ## 0. Release shape (next)
-- Name: **v0.6.0** (versionCode **11**, versionName "0.6.0"; bump workflow
-  `APP_VERSION`) — versionCode is already 10 on v0.5.1.
+- Name: **v0.6.0** (versionCode **12**, versionName "0.6.0"; bump workflow
+  `APP_VERSION`) — versionCode is already 11 on v0.5.2.
 - Framework decision unchanged: **not Flutter** — native-only platform APIs
   (NetworkStatsManager, VpnService, SYSTEM_ALERT_WINDOW, NotificationListener,
   foreground services + appops) can't be replaced by a Flutter UI, which would
@@ -67,5 +92,6 @@
 - Root paths are device-specific — keep the module optional and self-testing.
 - Don't regress the v0.5.0 schedule / history / export / animation surface.
 - Reduce-motion correctness: animations must never delay first paint.
-- Confirm the v0.5.1 crash-loop fix on the reporter's device; any residual
-  failure now surfaces as `Log.e("DataLimitMonitor", ...)` instead of a crash.
+- Confirm the v0.5.2 card-tap fix on the reporter's device before tagging;
+  a residual failure is no longer a crash-loop, so it needs a real logcat
+  (`adb logcat -d AndroidRuntime:E *:S`) rather than another static pass.

@@ -3,7 +3,7 @@
 > 🇮🇩 **Bahasa Indonesia?** Baca → [indonesia.md](indonesia.md)
 
 [![CI Build](https://github.com/arlingkin/dalim/actions/workflows/build.yml/badge.svg)](https://github.com/arlingkin/dalim/actions)
-[![Release](https://img.shields.io/badge/release-v0.5.1-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.5.1)
+[![Release](https://img.shields.io/badge/release-v0.5.2-blue)](https://github.com/arlingkin/dalim/releases/tag/v0.5.2)
 
 Track your data usage on Android and automatically enforce a budget you
 configure: **daily**, **weekly**, or **monthly**. The interface is
@@ -26,6 +26,12 @@ history graphs** on the DATA screen (daily / weekly / monthly), and an
 **animated native UI** with a "Reduce motion" setting — still zero new
 dependencies.
 
+**v0.5.2 — card-tap crash fix.** The **DATA** and **BATTERY** cards could close
+the app the moment you tapped them: both screens read the app context before
+they were attached, so opening either one failed. v0.5.2 fixes that and also
+stops the app from opening a new database connection every few seconds, which
+could end a long session early.
+
 **v0.5.1 — stability fix.** On some devices the app could close by itself in
 a loop (the monitor's poll tick crashed the whole app and got restarted over
 and over). v0.5.1 guards every monitoring and render tick so a failing tick
@@ -40,10 +46,10 @@ keystore. Install on Android 8.0+ (API 26).
 
 | Version | Type | Download |
 |---------|------|----------|
-| `v0.5.1` | Production · signed | [datalimit-0.5.1-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.5.1/datalimit-0.5.1-signed.apk) |
+| `v0.5.2` | Production · signed | [datalimit-0.5.2-signed.apk](https://github.com/arlingkin/dalim/releases/download/v0.5.2/datalimit-0.5.2-signed.apk) |
 
-- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.5.1](https://github.com/arlingkin/dalim/releases/tag/v0.5.1)
-- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.5.1/SHA256SUMS.txt)
+- Release page (anchor to tag): [github.com/arlingkin/dalim/releases/tag/v0.5.2](https://github.com/arlingkin/dalim/releases/tag/v0.5.2)
+- Checksum: [SHA256SUMS.txt](https://github.com/arlingkin/dalim/releases/download/v0.5.2/SHA256SUMS.txt)
 
 Earlier testing builds (`v0.2.x-pre`, unsigned / debug-signed) are still
 available on the [releases page](https://github.com/arlingkin/dalim/releases).
@@ -115,6 +121,7 @@ release (`v0.4.0` and later) with a `SHA256SUMS.txt` checksum.
 - Optional root/system module to actually disable the radio
 - (Scheduling, config export/import and history graphs shipped in **v0.5.0**)
 - (Crash-loop hardening shipped in **v0.5.1**)
+- (Card-tap crash fix and database-connection fix shipped in **v0.5.2**)
 
 ## Copyright
 

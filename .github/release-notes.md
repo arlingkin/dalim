@@ -1,14 +1,46 @@
-## Data Limit v0.5.1 — Crash-loop fix (stability)
+## Data Limit v0.5.2 — Card-tap crash fix (stability)
 
-**Stability fix release.** v0.5.0 could restart itself in an infinite loop on
-some devices: the background monitor's poll tick ran on the main thread with no
-exception guard, so a single per-tick failure crashed the whole app and the
-`START_STICKY` service immediately re-crashed — looking like the app "kept
-closing by itself". This release makes every polling/render path crash-proof.
+**Stability fix release.** v0.5.1 stopped the crash-*loop*, but two screens could
+still close instantly the moment you opened them: the **DATA** and **BATTERY**
+cards force-closed the app. Both screens read the app context in a field
+initializer, which runs before the screen is attached, so the lookup returned
+nothing and the screen died during startup. This release fixes that and removes
+the background-thread and database churn that could also end the app early.
 
 Check `SHA256SUMS.txt` to verify the file.
 
-### What's new in v0.5.1
+### What's new in v0.5.2
+- **DATA and BATTERY cards no longer close the app.** Both screens now
+  initialize their data readers after the screen is attached instead of during
+  startup, so tapping either card opens it normally.
+- **No more runaway database connections.** The dashboard was opening a fresh
+  database connection every 5 seconds while it sat open, and the vault search
+  opened a new thread for every keystroke. A single shared worker now handles
+  this work, so a long session can no longer exhaust the app's file
+  descriptors and get killed.
+- **A failing screen update can no longer kill the app.** Every screen refresh
+  — DATA, BATTERY, HISTORY, NOTIFICATIONS, APP CONTROL, SETTINGS, the data gate
+  and the monitor — now survives an individual error, and a screen that is
+  already closing is never updated again.
+- **Cleaner battery history.** The monitor wrote three duplicate rows per poll
+  into the battery chart. It now records a point only when the level really
+  changes, which makes the 24-hour chart easier to read.
+- **Config import is safer.** Importing a malformed config no longer risks
+  closing the app mid-import, and a bad file is reported instead.
+- **A corrupt setting can no longer break every screen.** An unreadable
+  budget-period or window setting now falls back to its default.
+- **App Control lists at most 100 apps**, so a device with a very large app list
+  no longer builds an oversized screen.
+- All v0.5.1 and v0.5.0 features unchanged: crash-loop guard, schedule
+  data-gate, config export/import, usage-history graphs, animated UI (with
+  Reduce-motion option).
+
+### Known behavior change
+- The battery chart records a point when the level changes (or at most every
+  5 minutes) instead of several times per poll. Duplicate rows written by
+  earlier versions remain until the normal retention purge clears them.
+
+### What's new in v0.5.1 (for reference)
 - **No more crash-loop.** The monitor poll tick is now guarded end-to-end: a
   failure in any tick path (usage-history writes, schedule/battery reads,
   notifications) is caught, logged (`DataLimitMonitor` tag), and the loop
@@ -17,8 +49,6 @@ Check `SHA256SUMS.txt` to verify the file.
 - **Dashboard & DATA screen hardened the same way.** The battery render on the
   dashboard and the DATA screen's 5-second refresh tick now survive individual
   render errors (the refresh loop already recovered from data/vault failures).
-- All v0.5.0 features unchanged: schedule data-gate, config export/import,
-  usage-history graphs, animated UI (with Reduce-motion option).
 
 ### What's new in v0.5.0 (for reference)
 - **Schedule window (auto data gate).** Choose when data may be used:
